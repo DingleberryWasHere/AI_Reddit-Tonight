@@ -2,347 +2,708 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralGen Creator Studio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dingle AI | Content Creator Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Roboto:wght@700&family=Anton&display=swap" rel="stylesheet">
+    <!-- Professional Font Stack -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@800;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: white; }
-        .font-montserrat { font-family: 'Montserrat', sans-serif; }
-        .font-roboto { font-family: 'Roboto', sans-serif; }
-        .font-anton { font-family: 'Anton', sans-serif; }
+        :root { --accent: #111827; --accent-hover: #374151; }
+        /* Strict Viewport Lock to prevent "scroll breakdown" */
+        html, body { height: 100%; height: 100dvh; width: 100%; overflow: hidden; overscroll-behavior: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; color: #111827; antialiased; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .custom-range {
-            -webkit-appearance: none;
-            background: transparent;
-        }
-        .custom-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 14px;
-            width: 14px;
-            border-radius: 50%;
-            background: #a855f7;
-            margin-top: -5px;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
-        }
-        .custom-range::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #334155;
-            border-radius: 2px;
-        }
+        /* Glassmorphism & UI Utilities */
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border: 1px solid #e5e7eb; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
         
-        .recording-pulse {
-            animation: pulse-red 2s infinite;
+        /* Premium Slider */
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #111827; margin-top: -6px; cursor: pointer;
+            box-shadow: 0 0 0 2px #fff, 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.1s;
         }
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e5e7eb; border-radius: 2px;
         }
+
+        /* Animations */
+        @keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .animate-pulse-slow { animation: pulse-subtle 3s infinite; }
+        .trial-glow { box-shadow: 0 0 0 2px #3b82f6, 0 0 15px rgba(59, 130, 246, 0.3); }
+        
+        /* File Input Hide */
+        .sr-only-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
     </style>
 </head>
-<body class="h-screen flex flex-col md:flex-row overflow-hidden selection:bg-purple-500 selection:text-white">
+<body class="h-full w-full flex flex-col md:flex-row text-gray-900">
 
-    <!-- Sidebar -->
-    <div id="sidebar" class="w-full md:w-[420px] flex flex-col border-r border-gray-800 bg-[#0B0F19] z-30 shadow-2xl h-full transition-all duration-300">
+    <!-- Sidebar Configuration -->
+    <div id="sidebar" class="w-full md:w-[460px] flex flex-col border-r border-gray-200 bg-white z-30 shadow-2xl h-full transition-transform duration-300">
         
-        <!-- Header -->
-        <div class="p-5 border-b border-gray-800 bg-[#0B0F19] flex justify-between items-center shrink-0">
+        <!-- App Header -->
+        <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center shrink-0 bg-white">
             <div>
-                <h1 class="text-lg font-black italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500 flex items-center gap-2">
-                    <i data-lucide="clapperboard" class="w-5 h-5 text-purple-400"></i> VIRALGEN STUDIO
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 flex items-center gap-2.5">
+                    <div class="bg-gray-900 text-white p-1.5 rounded-lg shadow-sm"><i data-lucide="bot" class="w-4 h-4"></i></div>
+                    DINGLE <span class="text-gray-400 font-medium">AI</span>
                 </h1>
-                <p class="text-[9px] text-gray-500 font-mono mt-0.5">V4.1 | FIXED RECORDING</p>
             </div>
-            <button onclick="window.location.reload()" class="text-xs text-gray-600 hover:text-white transition-colors" title="Reset Tool">
-                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <div class="flex gap-2">
+                <button onclick="resetApp()" class="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors" title="Reset Workspace">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Free Trial Banner (Dynamic) -->
+        <div id="trialBanner" class="hidden mx-6 mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl relative overflow-hidden group shrink-0">
+            <!-- Close Button -->
+            <button onclick="dismissTrial()" class="absolute top-2 right-2 p-1 text-blue-300 hover:text-blue-600 rounded-full hover:bg-blue-100 transition-colors z-10">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+            
+            <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none"><i data-lucide="zap" class="w-12 h-12 text-blue-600"></i></div>
+            <h3 class="text-blue-900 font-bold text-sm flex items-center gap-2"><i data-lucide="sparkles" class="w-3 h-3 text-blue-600"></i> Free Trial Available</h3>
+            <p class="text-xs text-blue-700 mt-1 leading-relaxed pr-4">Experience Dingle AI Pro with 1 free generation credit.</p>
+            <button onclick="activateTrial()" class="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded-lg shadow-sm transition-all flex justify-center items-center gap-2">
+                Activate 1-Time Trial
             </button>
         </div>
 
-        <!-- Scrollable Controls -->
-        <div class="flex-1 overflow-y-auto p-5 space-y-5">
+        <!-- Scrollable Workspace -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
 
-            <!-- API Key -->
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                    <i data-lucide="key" class="w-3 h-3"></i> Google API Key
-                </label>
-                <input id="apiKey" type="password" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors placeholder-gray-600" placeholder="Paste Gemini Key (Required)">
+            <!-- API Configuration -->
+            <div class="space-y-3" id="apiConfigSection">
+                <div class="flex justify-between items-end">
+                    <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Access Key</label>
+                    <span id="keyStatus" class="text-[10px] font-medium text-green-600 flex items-center gap-1 hidden bg-green-50 px-2 py-0.5 rounded-full"><i data-lucide="check" class="w-3 h-3"></i> Connected</span>
+                </div>
+                <div class="relative group">
+                    <input id="apiKey" type="password" oninput="saveKey()" class="w-full bg-gray-50 border border-gray-200 text-gray-800 text-xs rounded-xl px-4 py-3 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all font-mono" placeholder="Paste Google Gemini API Key">
+                    <div class="absolute right-3 top-3 text-gray-400 group-hover:text-gray-600 cursor-help" title="Required for AI generation"><i data-lucide="key" class="w-4 h-4"></i></div>
+                </div>
+                <div id="trialActiveBadge" class="hidden items-center gap-2 text-xs text-blue-600 font-medium bg-blue-50 px-3 py-2 rounded-lg border border-blue-100">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div> Trial Active (1 Credit Remaining)
+                </div>
             </div>
 
-            <!-- Story Panel -->
-            <div class="glass-panel rounded-xl p-4 space-y-3">
-                <label class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="pen-tool" class="w-3 h-3"></i> 1. Script
-                </label>
-                <div class="flex gap-2">
-                    <input id="topicInput" type="text" value="r/confessions" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-purple-500" placeholder="Topic">
-                    <button onclick="generateScript()" id="scriptBtn" class="bg-purple-600 hover:bg-purple-500 text-white px-3 rounded-lg font-bold text-xs transition-colors">Generate</button>
+            <!-- Workflow: Script -->
+            <section class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span class="w-5 h-5 rounded bg-gray-100 flex items-center justify-center text-gray-600 font-serif">1</span>
+                        SCRIPTWRITER
+                    </h2>
+                    <div class="flex gap-1">
+                        <button onclick="randomTopic()" class="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors" title="Surprise Me"><i data-lucide="shuffle" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="cleanScript()" class="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors" title="Clean Text"><i data-lucide="eraser" class="w-3.5 h-3.5"></i></button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] text-gray-400">Len:</span>
-                    <input type="range" id="lengthSlider" min="50" max="300" value="130" step="10" class="custom-range flex-1">
-                    <span id="lengthVal" class="text-[10px] text-gray-400 w-8">130w</span>
-                </div>
-                <textarea id="scriptText" rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs focus:outline-none focus:border-purple-500 font-mono text-gray-300 resize-none" placeholder="Script..."></textarea>
-            </div>
-
-            <!-- Audio Panel -->
-            <div class="glass-panel rounded-xl p-4 space-y-3">
-                <label class="text-xs font-bold text-green-300 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="mic-2" class="w-3 h-3"></i> 2. Audio
-                </label>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="selectVoice('Puck')" id="voice-Puck" class="voice-btn bg-purple-600 border border-purple-400 rounded-lg py-1.5 text-xs font-bold">Puck (Male)</button>
-                    <button onclick="selectVoice('Kore')" id="voice-Kore" class="voice-btn bg-gray-800 border border-gray-700 hover:bg-gray-700 rounded-lg py-1.5 text-xs font-bold">Kore (Female)</button>
-                </div>
-                <div class="flex items-center gap-2 pt-1">
-                    <span class="text-[10px] text-gray-400 w-8">Speed</span>
-                    <input type="range" id="speedSlider" min="0.8" max="1.5" step="0.05" value="1.0" class="custom-range flex-1">
-                    <span id="speedVal" class="text-[10px] text-gray-400 w-8">1.0x</span>
-                </div>
-                <button onclick="generateAudio()" id="audioBtn" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-600 py-2 rounded-lg font-bold text-xs transition-all mt-1">
-                    Generate TTS
-                </button>
-            </div>
-
-            <!-- Visuals Panel -->
-            <div class="glass-panel rounded-xl p-4 space-y-4">
-                <label class="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="palette" class="w-3 h-3"></i> 3. Style
-                </label>
                 
-                <!-- Background -->
-                <select id="bgMode" onchange="toggleBgMode()" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-2 py-1.5 text-xs">
-                    <option value="upload">🎥 Upload Gameplay (mp4)</option>
-                    <option value="tunnel">🌌 3D Tunnel</option>
-                    <option value="particles">✨ Particles</option>
-                </select>
-                <div id="videoUploadContainer" class="text-center">
-                    <input type="file" id="bgVideoInput" accept="video/*" class="hidden">
-                    <label for="bgVideoInput" class="block w-full border border-dashed border-gray-600 rounded-lg p-2 text-[10px] text-gray-400 cursor-pointer hover:bg-gray-800 hover:border-blue-500 transition-colors">
-                        Click to Select Video File
-                    </label>
+                <div class="flex gap-2">
+                    <input id="topicInput" type="text" value="r/confessions" class="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs focus:border-gray-900 outline-none transition-colors shadow-sm" placeholder="Topic (e.g., 'Work Stories')">
+                    <button onclick="generateScript()" id="scriptBtn" class="bg-gray-900 text-white px-4 rounded-lg font-bold text-xs hover:bg-gray-800 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Generate
+                    </button>
                 </div>
 
-                <!-- Text Customization -->
-                <div class="grid grid-cols-2 gap-x-4 gap-y-2 pt-2 border-t border-gray-700">
-                    <div>
-                        <label class="text-[9px] text-gray-400">Size</label>
-                        <input type="range" id="textSizeSlider" min="2" max="6" step="0.5" value="3.5" class="custom-range w-full">
-                    </div>
-                    <div>
-                        <label class="text-[9px] text-gray-400">Shadow</label>
-                        <input type="range" id="textShadowSlider" min="0" max="20" step="1" value="4" class="custom-range w-full">
-                    </div>
-                    <div>
-                        <label class="text-[9px] text-gray-400">Position Y</label>
-                        <input type="range" id="textPosSlider" min="-20" max="20" step="1" value="0" class="custom-range w-full">
-                    </div>
-                     <div>
-                        <label class="text-[9px] text-gray-400">Color</label>
-                        <div class="flex gap-1">
-                             <input type="color" id="textColor" value="#ffffff" class="w-6 h-4 bg-transparent border-0 cursor-pointer p-0">
-                             <input type="color" id="highlightColor" value="#fbbf24" class="w-6 h-4 bg-transparent border-0 cursor-pointer p-0">
+                <div class="relative">
+                    <textarea id="scriptText" oninput="updateStats()" rows="4" class="w-full bg-gray-50 border-0 rounded-xl p-3 text-xs focus:ring-1 focus:ring-gray-200 outline-none text-gray-700 resize-none leading-relaxed" placeholder="Script content..."></textarea>
+                    <div id="scriptStats" class="absolute bottom-3 right-3 text-[10px] text-gray-400 font-mono bg-white/80 px-2 py-1 rounded shadow-sm border border-gray-100">0w | 0s</div>
+                </div>
+            </section>
+
+            <!-- Workflow: Audio -->
+            <section class="space-y-4">
+                <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-5 h-5 rounded bg-gray-100 flex items-center justify-center text-gray-600 font-serif">2</span>
+                    VOICE & AUDIO
+                </h2>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectVoice('Puck')" id="voice-Puck" class="voice-btn relative bg-gray-900 text-white border border-transparent rounded-xl py-2.5 text-xs font-bold shadow-md transition-all">
+                        Puck <span class="opacity-50 font-normal ml-1">(M)</span>
+                        <div class="absolute top-1 right-1 w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                    </button>
+                    <button onclick="selectVoice('Kore')" id="voice-Kore" class="voice-btn relative bg-white text-gray-600 border border-gray-200 hover:border-gray-300 rounded-xl py-2.5 text-xs font-bold transition-all">
+                        Kore <span class="opacity-50 font-normal ml-1">(F)</span>
+                    </button>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-xl p-4 space-y-4 shadow-sm">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="flex items-center gap-2 cursor-pointer hover:text-blue-600 transition-colors group">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 text-gray-500 group-hover:text-blue-600">
+                                    <i data-lucide="music" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] font-bold text-gray-900">Backing Track</div>
+                                    <div id="musicName" class="text-[9px] text-gray-400 truncate w-24">None selected</div>
+                                </div>
+                                <input type="file" id="bgMusicInput" accept="audio/*" class="sr-only-input" onchange="handleMusicUpload(this)">
+                            </label>
+                            
+                            <!-- Simple Volume Mixer -->
+                             <div class="flex items-center gap-2">
+                                <i data-lucide="volume-1" class="w-3 h-3 text-gray-400"></i>
+                                <input type="range" id="musicVolSlider" min="0" max="0.4" step="0.01" value="0.1" class="w-16 custom-range" oninput="updateMixer()">
+                             </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <span class="text-[10px] font-medium text-gray-500">Speed</span>
+                            <input type="range" id="speedSlider" min="0.8" max="1.5" step="0.05" value="1.0" class="w-24 custom-range">
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Footer Actions -->
-        <div class="p-4 border-t border-gray-800 bg-[#0B0F19] space-y-2 shrink-0">
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="togglePlayback()" id="playBtn" disabled class="bg-gray-800 text-gray-500 cursor-not-allowed py-3 rounded-lg font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="play" class="w-3 h-3"></i> PREVIEW
-                </button>
                 
-                <!-- Replaced Auto-Record with Cinema Mode -->
-                <button onclick="toggleCinemaMode()" id="recordBtn" disabled class="bg-gray-800 text-gray-500 cursor-not-allowed py-3 rounded-lg font-black text-xs shadow-lg transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="monitor" class="w-3 h-3"></i> CINEMA MODE
+                <button onclick="generateAudio()" id="audioBtn" class="w-full group bg-white border border-gray-200 hover:border-gray-900 hover:bg-gray-50 text-gray-900 py-2.5 rounded-lg font-bold text-xs transition-all flex justify-center items-center gap-2">
+                    <i data-lucide="wand-2" class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-900 transition-colors"></i> Synthesize Speech
                 </button>
-            </div>
-            <div id="statusText" class="text-[9px] text-center text-gray-500 font-mono h-3">Ready</div>
-        </div>
-    </div>
+            </section>
 
-    <!-- Preview Area -->
-    <div class="flex-1 bg-black relative flex justify-center items-center overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-        
-        <!-- Background Layer -->
-        <div id="visual-container" class="absolute inset-0 z-0 flex items-center justify-center">
-            <div id="canvas-container" class="absolute inset-0 w-full h-full"></div>
-            <video id="bgVideoPlayer" class="absolute inset-0 w-full h-full object-cover hidden" loop muted playsinline></video>
-        </div>
+            <!-- Workflow: Visuals -->
+            <section class="space-y-4">
+                <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-5 h-5 rounded bg-gray-100 flex items-center justify-center text-gray-600 font-serif">3</span>
+                    COMPOSITOR
+                </h2>
 
-        <!-- Phone Frame -->
-        <div id="phoneFrame" class="relative w-[340px] h-[680px] z-10 transition-all duration-300">
-            <!-- Overlay Content (Captions) -->
-            <div class="absolute inset-0 flex flex-col pointer-events-none z-20">
-                
-                <!-- Top Spacer -->
-                <div class="h-1/4"></div>
+                <div class="space-y-2">
+                     <select id="bgMode" onchange="toggleBgMode()" class="w-full bg-white border border-gray-200 text-gray-700 text-xs font-medium rounded-lg px-3 py-2.5 outline-none focus:border-gray-900 cursor-pointer">
+                        <option value="upload">Custom Video File (MP4)</option>
+                        <option value="tunnel">Procedural: Neon Tunnel</option>
+                        <option value="particles">Procedural: Void Particles</option>
+                        <option value="solid">Solid Background</option>
+                    </select>
 
-                <!-- Caption Container -->
-                <div class="flex-1 flex items-center justify-center px-6">
-                    <div id="captionBox" class="text-4xl font-montserrat font-black text-center text-white leading-tight transition-transform duration-75 drop-shadow-xl select-none" style="text-shadow: 2px 2px 0 #000;">
-                        <!-- Text -->
+                    <div id="videoUploadContainer" class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center transition-all hover:border-gray-400 hover:bg-gray-50 group" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                        <input type="file" id="bgVideoInput" accept="video/*" class="sr-only-input" onchange="handleVideoUpload(this.files[0])">
+                        <label for="bgVideoInput" class="cursor-pointer flex flex-col items-center gap-2">
+                            <div class="p-3 bg-gray-50 rounded-full group-hover:scale-110 transition-transform"><i data-lucide="upload-cloud" class="w-5 h-5 text-gray-400 group-hover:text-gray-900"></i></div>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wide group-hover:text-gray-600">Drop 1080p/4K Video</span>
+                        </label>
                     </div>
                 </div>
 
-                <!-- Bottom Spacer / Progress -->
-                <div class="h-1/4 flex flex-col justify-end pb-12 px-8">
-                     <div class="h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-                        <div id="progressBar" class="h-full bg-white w-0 shadow-[0_0_10px_white]"></div>
-                     </div>
+                <!-- Text Styles -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 grid grid-cols-2 gap-3 shadow-sm">
+                    <div class="col-span-2">
+                        <label class="text-[9px] font-bold text-gray-400 uppercase mb-1.5 block">Typography</label>
+                        <select id="fontSelect" onchange="redrawCanvas()" class="w-full bg-gray-50 border-0 rounded-lg text-xs py-2 px-2 font-medium text-gray-800 focus:ring-0 cursor-pointer">
+                            <option value="Montserrat">Montserrat (Viral Standard)</option>
+                            <option value="Bangers">Bangers (Comic/Loud)</option>
+                            <option value="Oswald">Oswald (Tall/Condensed)</option>
+                            <option value="Inter">Inter (Clean/Modern)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                         <label class="text-[9px] font-bold text-gray-400 uppercase mb-1.5 block">Size</label>
+                         <input type="range" id="textSizeSlider" min="30" max="100" value="60" class="custom-range w-full" oninput="redrawCanvas()">
+                    </div>
+                    <div>
+                         <label class="text-[9px] font-bold text-gray-400 uppercase mb-1.5 block">Position</label>
+                         <input type="range" id="textPosSlider" min="-300" max="300" value="0" class="custom-range w-full" oninput="redrawCanvas()">
+                    </div>
+                    <div class="col-span-2 flex justify-between items-center pt-2 border-t border-gray-100">
+                        <span class="text-[10px] text-gray-500">Colors</span>
+                        <div class="flex gap-2">
+                            <input type="color" id="textColor" value="#ffffff" class="w-6 h-6 rounded cursor-pointer border-0 p-0" oninput="redrawCanvas()" title="Main Text">
+                            <input type="color" id="highlightColor" value="#fbbf24" class="w-6 h-6 rounded cursor-pointer border-0 p-0" oninput="redrawCanvas()" title="Highlight Text">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Bottom Spacer -->
+            <div class="h-10"></div>
+        </div>
+
+        <!-- Sticky Footer -->
+        <div class="p-5 border-t border-gray-200 bg-white space-y-3 z-40 shrink-0">
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="togglePlayback()" id="playBtn" disabled class="bg-gray-100 text-gray-400 cursor-not-allowed py-3.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 hover:bg-gray-200">
+                    <i data-lucide="play" class="w-4 h-4"></i> PREVIEW
+                </button>
+                
+                <button onclick="toggleCinemaMode()" id="renderBtn" disabled class="bg-gray-100 text-gray-400 cursor-not-allowed py-3.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 hover:bg-gray-200">
+                    <i data-lucide="film" class="w-4 h-4"></i> RENDER
+                </button>
+            </div>
+            <div id="statusText" class="text-[10px] text-center text-gray-400 font-mono flex items-center justify-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span> System Ready
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CANVAS AREA -->
+    <div class="flex-1 bg-gray-100 relative flex justify-center items-center overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        
+        <!-- Toast Container -->
+        <div id="toastContainer" class="absolute top-8 z-[100] flex flex-col gap-2 items-center w-full pointer-events-none"></div>
+
+        <!-- Canvas Wrapper (Aspect Ratio Lock) -->
+        <div id="canvasWrapper" class="relative shadow-2xl rounded-[2.5rem] overflow-hidden border-[10px] border-gray-900 bg-black aspect-[9/16] h-auto max-h-[90dvh] transition-transform duration-500">
+            
+            <!-- Core Canvas -->
+            <canvas id="mainCanvas" class="w-full h-full object-cover block"></canvas>
+            
+            <!-- Video Source (Hidden) -->
+            <video id="sourceVideo" class="hidden" loop muted playsinline crossorigin="anonymous"></video>
+
+            <!-- Render/Cinema Overlay -->
+            <div id="cinemaOverlay" class="absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
+                <div class="bg-white p-8 rounded-3xl shadow-2xl text-center space-y-6 w-[340px] border border-gray-100 transform scale-95 transition-transform duration-300" id="renderModal">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-black tracking-tight text-gray-900">EXPORT VIDEO</h2>
+                        <p class="text-xs text-gray-500">Configure your final render settings.</p>
+                    </div>
+                    
+                    <div class="space-y-4 text-left">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase pl-1">Quality</label>
+                            <select id="renderRes" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-bold text-gray-800 outline-none focus:border-gray-900">
+                                <option value="1080">1080p (Fast • Standard)</option>
+                                <option value="2160">4K UHD (Slow • High Quality)</option>
+                            </select>
+                        </div>
+                        
+                         <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase pl-1">Frame Rate</label>
+                             <div class="flex bg-gray-50 border border-gray-200 rounded-xl p-1">
+                                 <button onclick="setFps(30)" id="fps30" class="flex-1 py-2 rounded-lg bg-gray-900 text-white text-xs font-bold shadow-sm transition-all">30 FPS</button>
+                                 <button onclick="setFps(60)" id="fps60" class="flex-1 py-2 rounded-lg text-gray-500 text-xs font-bold hover:text-gray-900 transition-all">60 FPS</button>
+                             </div>
+                        </div>
+                    </div>
+
+                    <button onclick="startRendering()" id="startRenderBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-red-100 transition-all flex items-center justify-center gap-2 group">
+                        <i data-lucide="download" class="w-4 h-4 group-hover:scale-110 transition-transform"></i> START RENDER
+                    </button>
+                    
+                    <button onclick="toggleCinemaMode()" class="text-xs text-gray-400 hover:text-gray-900 font-medium">Cancel</button>
+                </div>
+                
+                <!-- Progress State -->
+                <div id="renderProgressContainer" class="hidden absolute inset-0 bg-black flex flex-col items-center justify-center text-white space-y-6">
+                    <div class="relative w-20 h-20">
+                        <div class="absolute inset-0 border-4 border-gray-800 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-t-red-600 rounded-full animate-spin"></div>
+                    </div>
+                    <div class="text-center space-y-2">
+                        <h3 class="font-bold text-2xl tracking-tight">RENDERING...</h3>
+                        <p class="text-sm text-gray-500 font-mono">Do not close this tab</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Phone Bezel (Click through) -->
-            <div class="absolute inset-0 border-[6px] border-gray-900 rounded-[3rem] pointer-events-none shadow-2xl"></div>
-             <!-- Notch -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-xl z-30"></div>
+            <!-- Play Overlay -->
+            <div id="playOverlay" onclick="togglePlayback()" class="absolute inset-0 z-10 cursor-pointer flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity">
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-full border border-white/30 shadow-2xl transform hover:scale-110 transition-transform">
+                     <i data-lucide="play" class="w-12 h-12 text-white fill-white"></i>
+                </div>
+            </div>
         </div>
-
-        <!-- Exit Cinema Button (Hidden by default) -->
-        <button id="exitCinemaBtn" onclick="toggleCinemaMode()" class="hidden absolute top-4 right-4 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold text-xs shadow-lg z-50">
-            EXIT CINEMA MODE
-        </button>
+        
+        <!-- Audio Hidden -->
+        <audio id="ttsPlayer" class="hidden" crossorigin="anonymous"></audio>
+        <audio id="musicPlayer" class="hidden" loop crossorigin="anonymous"></audio>
 
     </div>
 
-    <!-- Hidden Audio -->
-    <audio id="speechPlayer" class="hidden"></audio>
-
     <script>
-        lucide.createIcons();
-
-        // --- Core State ---
-        let audioBlob = null;
-        let isPlaying = false;
-        let animationFrame;
-        let selectedVoice = "Puck";
-        let wordMeta = []; // The Smart Sync Data
-        let isCinemaMode = false;
+        // --- CONSTANTS ---
+        const FREE_TRIAL_KEY = "AIzaSyDLJpNCwSL8VV4KKaIj6yQpdDuYKqpdXEo";
+        const CANVAS_WIDTH = 1080;
+        const CANVAS_HEIGHT = 1920;
         
-        // --- 3D Vars ---
+        // --- STATE ---
+        let renderFps = 30;
+        let audioBlob = null;
+        let wordMeta = [];
+        let isPlaying = false;
+        let isRendering = false;
+        let animationId;
+        
+        // Audio Context (Created on User Interaction)
+        let audioCtx; 
+        
+        // 3D
         let scene, camera, renderer, meshGroup;
 
-        // --- Customization Logic ---
-        const els = {
-            captionBox: document.getElementById('captionBox'),
-            speedSlider: document.getElementById('speedSlider'),
-            speedVal: document.getElementById('speedVal'),
-            lengthSlider: document.getElementById('lengthSlider'),
-            lengthVal: document.getElementById('lengthVal'),
-            textSize: document.getElementById('textSizeSlider'),
-            textShadow: document.getElementById('textShadowSlider'),
-            textPos: document.getElementById('textPosSlider'),
-            textColor: document.getElementById('textColor'),
-            highlightColor: document.getElementById('highlightColor'),
+        // --- DOM ---
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false }); // Optimize for speed
+        const ttsPlayer = document.getElementById('ttsPlayer');
+        const musicPlayer = document.getElementById('musicPlayer');
+        const sourceVideo = document.getElementById('sourceVideo');
+
+        // --- INIT ---
+        window.onload = () => {
+            lucide.createIcons();
+            initCanvas();
+            checkTrialStatus();
+            loadKey();
+            init3D();
         };
 
-        els.speedSlider.oninput = function() { els.speedVal.innerText = this.value + 'x'; };
-        els.lengthSlider.oninput = function() { els.lengthVal.innerText = this.value + 'w'; };
-        els.textSize.oninput = function() { els.captionBox.style.fontSize = this.value + 'rem'; };
-        els.textShadow.oninput = function() { 
-            const val = this.value;
-            els.captionBox.style.textShadow = `${val}px ${val}px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000`; 
-        };
-        els.textPos.oninput = function() { els.captionBox.style.transform = `translateY(${this.value * 2}px)`; };
-        els.textColor.oninput = function() { els.captionBox.style.color = this.value; };
-
-        // --- Video Upload ---
-        document.getElementById('bgVideoInput').onchange = function(e) {
-            const file = e.target.files[0];
-            if(file){
-                const url = URL.createObjectURL(file);
-                const vid = document.getElementById('bgVideoPlayer');
-                vid.src = url;
-                vid.play();
-                document.getElementById('bgMode').value = 'upload';
-                toggleBgMode();
-            }
-        };
-
-        function setStatus(msg, type='normal') {
-            const el = document.getElementById('statusText');
-            el.innerText = msg;
-            el.className = `text-[9px] text-center font-mono h-3 ${type==='error'?'text-red-500':'text-gray-500'}`;
+        function initCanvas() {
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+            redrawCanvas(); 
         }
 
-        // --- 1. Script Generation ---
+        // --- FREE TRIAL LOGIC ---
+        function checkTrialStatus() {
+            const dismissed = localStorage.getItem('viralgen_trial_dismissed');
+            const used = localStorage.getItem('viralgen_trial_used');
+            const manualKey = localStorage.getItem('viralgen_key');
+            
+            // Should we show the banner?
+            // Show if: not used, not dismissed, and no manual key saved
+            if(!used && !dismissed && !manualKey) {
+                document.getElementById('trialBanner').classList.remove('hidden');
+            } 
+            
+            // If active, show badge regardless of banner
+            if (used === 'active') {
+                showTrialActiveState();
+            }
+        }
+
+        function activateTrial() {
+            if(localStorage.getItem('viralgen_trial_used') === 'exhausted') {
+                showToast("Free trial already used.", "error");
+                return;
+            }
+            localStorage.setItem('viralgen_trial_used', 'active');
+            showTrialActiveState();
+            showToast("Free Trial Activated! 1 Credit Added.");
+        }
+        
+        function dismissTrial() {
+            localStorage.setItem('viralgen_trial_dismissed', 'true');
+            document.getElementById('trialBanner').classList.add('hidden');
+        }
+
+        function showTrialActiveState() {
+            document.getElementById('trialBanner').classList.add('hidden');
+            document.getElementById('apiKey').value = "FREE-TRIAL-ACTIVE-••••••••";
+            document.getElementById('apiKey').disabled = true;
+            document.getElementById('trialActiveBadge').classList.remove('hidden');
+            document.getElementById('trialActiveBadge').classList.add('flex');
+            document.getElementById('keyStatus').classList.remove('hidden');
+        }
+        
+        function consumeTrial() {
+            if(localStorage.getItem('viralgen_trial_used') === 'active') {
+                localStorage.setItem('viralgen_trial_used', 'exhausted');
+                document.getElementById('trialActiveBadge').innerHTML = "Trial Exhausted. Add Key.";
+                document.getElementById('trialActiveBadge').classList.replace('text-blue-600','text-red-600');
+                document.getElementById('trialActiveBadge').classList.replace('bg-blue-50','bg-red-50');
+                document.getElementById('trialActiveBadge').classList.replace('border-blue-100','border-red-100');
+            }
+        }
+        
+        function getEffectiveKey() {
+            if(localStorage.getItem('viralgen_trial_used') === 'active') return FREE_TRIAL_KEY;
+            const uiKey = document.getElementById('apiKey').value;
+            if(uiKey && !uiKey.startsWith("FREE-TRIAL")) return uiKey;
+            return localStorage.getItem('viralgen_key');
+        }
+
+        // --- RENDER PIPELINE ---
+        function drawFrame() {
+            // 1. Background
+            const mode = document.getElementById('bgMode').value;
+            
+            if (mode === 'upload') {
+                if (sourceVideo.readyState >= 2) {
+                    const rV = sourceVideo.videoWidth / sourceVideo.videoHeight;
+                    const rC = canvas.width / canvas.height;
+                    let dW, dH, dX, dY;
+                    if (rV > rC) { dH = canvas.height; dW = dH * rV; dX = (canvas.width - dW) / 2; dY = 0; }
+                    else { dW = canvas.width; dH = dW / rV; dX = 0; dY = (canvas.height - dH) / 2; }
+                    ctx.drawImage(sourceVideo, dX, dY, dW, dH);
+                } else {
+                    ctx.fillStyle = "#000"; ctx.fillRect(0,0,canvas.width, canvas.height); // Buffer safety
+                }
+            } else if (mode === 'solid') {
+                ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else {
+                if(renderer) {
+                    animate3D();
+                    ctx.drawImage(renderer.domElement, 0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            // 2. Dimmer
+            ctx.fillStyle = 'rgba(0,0,0,0.35)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 3. Captions
+            if ((isPlaying || isRendering) && !ttsPlayer.paused) {
+                const prog = ttsPlayer.currentTime / ttsPlayer.duration;
+                const item = wordMeta.find(m => prog <= m.endPerc);
+                if (item) drawCaption(item.word);
+                
+                // Progress Bar
+                const bw = canvas.width * 0.85;
+                const bh = 15;
+                const bx = (canvas.width - bw) / 2;
+                const by = canvas.height - 180;
+                
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 99); ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = 'rgba(255,255,255,0.5)'; ctx.shadowBlur = 20;
+                ctx.beginPath(); ctx.roundRect(bx, by, bw * prog, bh, 99); ctx.fill();
+                ctx.shadowBlur = 0;
+            } else {
+                if(!isPlaying && !isRendering) drawCaption("VIRAL VIDEO");
+            }
+        }
+
+        function drawCaption(text) {
+            const size = parseInt(document.getElementById('textSizeSlider').value);
+            const yOff = parseInt(document.getElementById('textPosSlider').value);
+            const font = document.getElementById('fontSelect').value;
+            const colMain = document.getElementById('textColor').value;
+            const colHigh = document.getElementById('highlightColor').value;
+
+            const clean = text.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+            const isHigh = ['WHAT','WHY','NO','STOP','DIED','KILLED','SECRET','MONEY','WTF','OMG'].includes(clean) || clean.length > 7;
+
+            // Responsive Scaling
+            const scale = canvas.width / 1080;
+            const finalSize = scale * (isHigh ? size * 1.6 : size * 2.5);
+            
+            ctx.font = `900 ${finalSize}px "${font}", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const x = canvas.width / 2;
+            const y = (canvas.height / 2) + (yOff * scale);
+
+            // Stroke
+            ctx.lineJoin = 'round';
+            ctx.miterLimit = 2;
+            ctx.lineWidth = finalSize * 0.15;
+            ctx.strokeStyle = 'black';
+            ctx.strokeText(text.toUpperCase(), x, y);
+
+            // Fill
+            ctx.fillStyle = isHigh ? colHigh : colMain;
+            ctx.fillText(text.toUpperCase(), x, y);
+        }
+
+        function redrawCanvas() { if(!isPlaying) requestAnimationFrame(drawFrame); }
+
+        // --- AUDIO ENGINE V2 (ROBUST) ---
+        function ensureAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // --- RECORDING ---
+        async function startRendering() {
+            if (!audioBlob) return showToast("No audio generated yet.", "error");
+            
+            isRendering = true;
+            document.getElementById('renderModal').classList.add('hidden');
+            document.getElementById('renderProgressContainer').classList.remove('hidden');
+
+            const ctxTarget = ensureAudioContext();
+            
+            // Setup High Res Canvas
+            const res = parseInt(document.getElementById('renderRes').value);
+            canvas.width = res;
+            canvas.height = res * (16/9);
+
+            // Create Destination for Mixed Audio
+            const dest = ctxTarget.createMediaStreamDestination();
+            
+            const audioBuffer = await fetch(ttsPlayer.src).then(r=>r.arrayBuffer()).then(b=>ctxTarget.decodeAudioData(b));
+            const ttsSource = ctxTarget.createBufferSource();
+            ttsSource.buffer = audioBuffer;
+            ttsSource.connect(dest);
+            
+            // Music handling (Buffer approach for safety)
+            let musicSource;
+            if(musicPlayer.src) {
+                try {
+                    const mBuf = await fetch(musicPlayer.src).then(r=>r.arrayBuffer()).then(b=>ctxTarget.decodeAudioData(b));
+                    musicSource = ctxTarget.createBufferSource();
+                    musicSource.buffer = mBuf;
+                    musicSource.loop = true;
+                    // Apply volume
+                    const gain = ctxTarget.createGain();
+                    gain.gain.value = musicPlayer.volume;
+                    musicSource.connect(gain).connect(dest);
+                } catch(e) { console.warn("Music load failed for render", e); }
+            }
+
+            // Canvas Stream
+            const stream = canvas.captureStream(renderFps);
+            const combinedStream = new MediaStream([...stream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+            
+            const recorder = new MediaRecorder(combinedStream, {
+                mimeType: 'video/webm; codecs=vp9',
+                videoBitsPerSecond: res === 2160 ? 25000000 : 8000000
+            });
+            
+            const chunks = [];
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = () => {
+                const b = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(b);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `DingleAI_Export_${Date.now()}.webm`;
+                a.click();
+                
+                // Cleanup
+                isRendering = false;
+                canvas.width = CANVAS_WIDTH; // Reset prev
+                canvas.height = CANVAS_HEIGHT;
+                document.getElementById('renderProgressContainer').classList.add('hidden');
+                document.getElementById('renderModal').classList.remove('hidden');
+                toggleCinemaMode();
+            };
+
+            // SYNC START
+            recorder.start();
+            ttsSource.start(0);
+            if(musicSource) musicSource.start(0);
+            
+            if(document.getElementById('bgMode').value === 'upload') {
+                sourceVideo.currentTime = 0;
+                sourceVideo.play();
+            }
+
+            // Duration check
+            const duration = ttsPlayer.duration * 1000;
+            const startTime = performance.now();
+
+            function renderLoop() {
+                if(!isRendering) return;
+                drawFrame();
+                if (performance.now() - startTime > duration + 1000) { // +1s buffer
+                    recorder.stop();
+                    ttsSource.stop();
+                    if(musicSource) musicSource.stop();
+                    sourceVideo.pause();
+                } else {
+                    requestAnimationFrame(renderLoop);
+                }
+            }
+            renderLoop();
+        }
+
+        // --- PLAYBACK ---
+        function togglePlayback() {
+            if (isPlaying) {
+                ttsPlayer.pause();
+                musicPlayer.pause();
+                sourceVideo.pause();
+                isPlaying = false;
+                cancelAnimationFrame(animationId);
+                
+                document.getElementById('playBtn').innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> PREVIEW';
+                document.getElementById('playBtn').classList.replace('bg-red-50', 'bg-gray-100');
+                document.getElementById('playBtn').classList.replace('text-red-600', 'text-gray-400');
+            } else {
+                if (!audioBlob) return showToast("Generate audio first!", "error");
+                
+                // Ducking Listener
+                ttsPlayer.onplay = () => { musicPlayer.volume = document.getElementById('musicVolSlider').value * 0.3; };
+                ttsPlayer.onended = () => { 
+                    musicPlayer.volume = document.getElementById('musicVolSlider').value; 
+                    togglePlayback(); 
+                };
+
+                ttsPlayer.playbackRate = document.getElementById('speedSlider').value;
+                musicPlayer.volume = document.getElementById('musicVolSlider').value;
+
+                ttsPlayer.play();
+                if(musicPlayer.src) musicPlayer.play();
+                if(document.getElementById('bgMode').value === 'upload') sourceVideo.play();
+
+                isPlaying = true;
+                document.getElementById('playBtn').innerHTML = '<i data-lucide="square" class="w-4 h-4"></i> STOP';
+                document.getElementById('playBtn').classList.replace('bg-gray-100', 'bg-red-50');
+                document.getElementById('playBtn').classList.replace('text-gray-400', 'text-red-600');
+                
+                animate();
+            }
+            lucide.createIcons();
+        }
+
+        function animate() {
+            if(isPlaying) {
+                drawFrame();
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // --- GENERATION API ---
         async function generateScript() {
-            const apiKey = document.getElementById('apiKey').value;
-            if(!apiKey) return alert("API Key Missing!");
+            const key = getEffectiveKey();
+            if(!key) return showToast("API Key Required", "error");
             
             const btn = document.getElementById('scriptBtn');
-            btn.innerHTML = '...';
-            btn.disabled = true;
+            btn.innerHTML = '...'; btn.disabled = true;
 
             try {
-                const prompt = `Write a script for a viral short video about "${document.getElementById('topicInput').value}".
-                Style: Reddit Story / Confession.
-                Length: ~${els.lengthSlider.value} words.
-                Format: Pure text only. No bold, no formatting, no title.
-                Structure: Dramatic hook -> Twist -> Cliffhanger.`;
-
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: 
+                        `Write a viral ${document.getElementById('topicInput').value} script. 
+                        Format: Pure text (no bold/markdown). 
+                        Style: First-person Reddit story. 
+                        Length: 130 words.` 
+                    }] }] })
                 });
-                const data = await res.json();
-                document.getElementById('scriptText').value = data.candidates[0].content.parts[0].text;
-                setStatus("Script Generated");
+                const d = await res.json();
+                if(d.error) throw new Error(d.error.message);
+                document.getElementById('scriptText').value = d.candidates[0].content.parts[0].text;
+                updateStats();
+                consumeTrial();
+                showToast("Script Generated");
             } catch(e) {
-                setStatus("Script Error", "error");
                 console.error(e);
+                showToast("Script Error: " + e.message, "error");
             }
-            btn.innerHTML = 'Generate';
-            btn.disabled = false;
-        }
-
-        // --- 2. Audio Generation + SMART SYNC ENGINE V2 ---
-        function selectVoice(v) {
-            selectedVoice = v;
-            document.querySelectorAll('.voice-btn').forEach(b => {
-                b.classList.remove('bg-purple-600', 'border-purple-400');
-                b.classList.add('bg-gray-800', 'border-gray-700');
-            });
-            const active = document.getElementById(`voice-${v}`);
-            active.classList.remove('bg-gray-800', 'border-gray-700');
-            active.classList.add('bg-purple-600', 'border-purple-400');
+            btn.innerHTML = 'Generate'; btn.disabled = false;
         }
 
         async function generateAudio() {
-            const apiKey = document.getElementById('apiKey').value;
+            const key = getEffectiveKey();
             const text = document.getElementById('scriptText').value;
-            if(!apiKey || !text) return alert("Missing Key or Text");
+            if(!key || !text) return showToast("Missing inputs", "error");
 
             const btn = document.getElementById('audioBtn');
-            btn.innerText = "Synthesizing...";
-            btn.disabled = true;
+            btn.innerHTML = 'Generating...'; btn.disabled = true;
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -353,258 +714,158 @@
                         }
                     })
                 });
-                const data = await res.json();
-                
-                // Decode Audio
-                const binary = atob(data.candidates[0].content.parts[0].inlineData.data);
-                const bytes = new Uint8Array(binary.length);
-                for(let i=0; i<binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                
-                // Convert to WAV
-                const wavBuffer = pcmToWav(bytes, 24000);
-                audioBlob = new Blob([wavBuffer], { type: 'audio/wav' });
-                
-                const audio = document.getElementById('speechPlayer');
-                audio.src = URL.createObjectURL(audioBlob);
+                const d = await res.json();
+                if(d.error) throw new Error(d.error.message);
 
-                // --- SYNC ENGINE V2 ---
-                const cleanText = text.replace(/\n/g, " ");
-                const words = cleanText.split(" ").filter(w => w.length > 0);
+                const bin = atob(d.candidates[0].content.parts[0].inlineData.data);
+                const bytes = new Uint8Array(bin.length);
+                for(let i=0; i<bin.length; i++) bytes[i] = bin.charCodeAt(i);
                 
-                let totalWeight = 0;
-                const wordWeights = words.map(w => {
-                    let weight = w.length; // Base weight (1 per char)
-                    if (w.includes(',') || w.includes(';')) weight += 5; // Comma pause
-                    else if (w.includes('.') || w.includes('!') || w.includes('?')) weight += 10; // Period pause
-                    totalWeight += weight;
-                    return { word: w, weight: weight };
+                // WAV Header
+                const wav = new ArrayBuffer(44 + bytes.length);
+                const v = new DataView(wav);
+                const w = (o, s) => { for(let i=0; i<s.length; i++) v.setUint8(o+i, s.charCodeAt(i)); };
+                w(0,'RIFF'); v.setUint32(4, 36+bytes.length, true); w(8,'WAVE'); w(12,'fmt '); 
+                v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); 
+                v.setUint32(24, 24000, true); v.setUint32(28, 48000, true); v.setUint16(32, 2, true); 
+                v.setUint16(34, 16, true); w(36,'data'); v.setUint32(40, bytes.length, true);
+                new Uint8Array(wav, 44).set(bytes);
+
+                audioBlob = new Blob([wav], { type: 'audio/wav' });
+                ttsPlayer.src = URL.createObjectURL(audioBlob);
+
+                // Sync Analysis
+                const words = text.replace(/\n/g, " ").split(" ").filter(w => w.length > 0);
+                let total = 0;
+                const weighted = words.map(w => {
+                    let v = w.length;
+                    if(w.includes('.')) v+=8; else if(w.includes(',')) v+=4;
+                    total += v;
+                    return { w, v };
                 });
+                let acc = 0;
+                wordMeta = weighted.map(i => { acc += i.v; return { word: i.w, endPerc: acc/total }; });
 
-                let weightAccumulator = 0;
-                wordMeta = wordWeights.map(item => {
-                    weightAccumulator += item.weight;
-                    return {
-                        word: item.word,
-                        endPerc: weightAccumulator / totalWeight
-                    };
-                });
-
-                audio.onloadedmetadata = () => {
-                    document.getElementById('playBtn').disabled = false;
-                    document.getElementById('playBtn').classList.remove('cursor-not-allowed', 'text-gray-500');
-                    document.getElementById('playBtn').classList.add('text-white', 'hover:bg-gray-700');
-                    
-                    document.getElementById('recordBtn').disabled = false;
-                    document.getElementById('recordBtn').classList.remove('cursor-not-allowed', 'text-gray-500');
-                    document.getElementById('recordBtn').classList.add('text-white', 'bg-blue-600', 'hover:bg-blue-500');
-                    
-                    setStatus("Audio Ready");
-                    btn.innerText = "Generate TTS";
-                    btn.disabled = false;
-                };
+                consumeTrial();
+                showToast("Audio Ready");
+                
+                // Enable UI
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('playBtn').classList.replace('bg-gray-100', 'bg-gray-900');
+                document.getElementById('playBtn').classList.replace('text-gray-400', 'text-white');
+                document.getElementById('playBtn').classList.replace('cursor-not-allowed', 'cursor-pointer');
+                
+                document.getElementById('renderBtn').disabled = false;
+                document.getElementById('renderBtn').classList.replace('bg-gray-100', 'bg-gray-900');
+                document.getElementById('renderBtn').classList.replace('text-gray-400', 'text-white');
+                document.getElementById('renderBtn').classList.replace('cursor-not-allowed', 'cursor-pointer');
 
             } catch(e) {
                 console.error(e);
-                setStatus("TTS Error", "error");
-                btn.innerText = "Generate TTS";
-                btn.disabled = false;
+                showToast("Audio Error: " + e.message, "error");
             }
+            btn.innerHTML = '<i data-lucide="wand-2" class="w-3.5 h-3.5"></i> Synthesize Speech';
+            btn.disabled = false;
+            lucide.createIcons();
         }
 
-        // --- 3. Playback & Cinema Mode ---
-        function togglePlayback() {
-            const btn = document.getElementById('playBtn');
-            if (isPlaying) {
-                stopAll();
-                btn.innerHTML = '<i data-lucide="play" class="w-3 h-3"></i> PREVIEW';
-                btn.classList.remove('text-red-400');
-            } else {
-                startAll();
-                btn.innerHTML = '<i data-lucide="square" class="w-3 h-3"></i> STOP';
-                btn.classList.add('text-red-400');
-            }
+        // --- UTILS ---
+        function showToast(msg, type='success') {
+            const el = document.createElement('div');
+            el.className = `px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 transform transition-all translate-y-2 opacity-0 ${type==='error'?'bg-red-600 text-white':'bg-gray-900 text-white'}`;
+            el.innerHTML = type==='error' ? `<i data-lucide="alert-circle" class="w-3 h-3"></i> ${msg}` : `<i data-lucide="check" class="w-3 h-3 text-green-400"></i> ${msg}`;
+            document.getElementById('toastContainer').appendChild(el);
             lucide.createIcons();
+            requestAnimationFrame(() => el.classList.remove('translate-y-2', 'opacity-0'));
+            setTimeout(() => el.remove(), 3000);
+        }
+
+        let selectedVoice = "Puck";
+        function selectVoice(v) {
+            selectedVoice = v;
+            document.querySelectorAll('.voice-btn').forEach(b => {
+                b.className = "voice-btn relative bg-white text-gray-600 border border-gray-200 hover:border-gray-300 rounded-xl py-2.5 text-xs font-bold transition-all";
+                if(b.querySelector('div')) b.querySelector('div').remove();
+            });
+            const active = document.getElementById(`voice-${v}`);
+            active.className = "voice-btn relative bg-gray-900 text-white border border-transparent rounded-xl py-2.5 text-xs font-bold shadow-md transition-all";
+            active.innerHTML += `<div class="absolute top-1 right-1 w-1.5 h-1.5 bg-green-400 rounded-full"></div>`;
+        }
+
+        function toggleBgMode() {
+            const mode = document.getElementById('bgMode').value;
+            if(mode !== 'upload' && mode !== 'solid') init3D();
+            if(mode === 'upload') document.getElementById('videoUploadContainer').classList.remove('hidden');
+            else document.getElementById('videoUploadContainer').classList.add('hidden');
+            redrawCanvas();
         }
 
         function toggleCinemaMode() {
-            const sidebar = document.getElementById('sidebar');
-            const btn = document.getElementById('recordBtn');
-            const exitBtn = document.getElementById('exitCinemaBtn');
-            
-            isCinemaMode = !isCinemaMode;
-
-            if(isCinemaMode) {
-                sidebar.classList.add('hidden');
-                exitBtn.classList.remove('hidden');
-                btn.innerHTML = 'EXIT CINEMA';
-                // Automatically start playing if not already
-                if(!isPlaying) togglePlayback();
+            const overlay = document.getElementById('cinemaOverlay');
+            if(overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(()=>overlay.classList.remove('opacity-0'), 10);
+                document.getElementById('renderModal').classList.remove('scale-95');
             } else {
-                sidebar.classList.remove('hidden');
-                exitBtn.classList.add('hidden');
-                btn.innerHTML = '<i data-lucide="monitor" class="w-3 h-3"></i> CINEMA MODE';
-            }
-            lucide.createIcons();
-        }
-
-        function startAll() {
-            const audio = document.getElementById('speechPlayer');
-            const vid = document.getElementById('bgVideoPlayer');
-            const bgMode = document.getElementById('bgMode').value;
-            
-            // Apply Speed
-            audio.playbackRate = parseFloat(document.getElementById('speedSlider').value);
-            
-            audio.play();
-            if(bgMode === 'upload') vid.play();
-            else init3D(); // Ensure 3D is running
-
-            isPlaying = true;
-            animate();
-        }
-
-        function stopAll() {
-            const audio = document.getElementById('speechPlayer');
-            const vid = document.getElementById('bgVideoPlayer');
-            
-            audio.pause();
-            audio.currentTime = 0;
-            vid.pause();
-            
-            isPlaying = false;
-            cancelAnimationFrame(animationFrame);
-            
-            document.getElementById('captionBox').innerText = "";
-            document.getElementById('progressBar').style.width = "0%";
-        }
-
-        function animate() {
-            if (!isPlaying) return;
-
-            const audio = document.getElementById('speechPlayer');
-            
-            // Progress 0 to 1
-            const progress = audio.currentTime / audio.duration;
-            
-            // Sync Logic
-            const currentItem = wordMeta.find(m => progress <= m.endPerc);
-            
-            if (currentItem) {
-                const rawWord = currentItem.word;
-                const cleanWord = rawWord.replace(/[^a-zA-Z0-9]/g, "");
-                const box = els.captionBox;
-
-                if (box.innerText !== rawWord.toUpperCase()) {
-                    box.innerText = rawWord.toUpperCase();
-                    
-                    // Highlight High-Impact Words
-                    const isHighlight = cleanWord.length > 6 || 
-                        ['WHAT', 'WHY', 'NO', 'STOP', 'DIED', 'KILLED', 'SECRET', 'MONEY', 'WTF'].includes(cleanWord.toUpperCase());
-                    
-                    box.style.color = isHighlight ? els.highlightColor.value : els.textColor.value;
-                    box.style.transform = isHighlight ? `translateY(${els.textPos.value*2}px) scale(1.1)` : `translateY(${els.textPos.value*2}px) scale(1)`;
-                }
-            }
-
-            document.getElementById('progressBar').style.width = `${progress * 100}%`;
-
-            // Background Animation
-            if(document.getElementById('bgMode').value !== 'upload') animate3D();
-
-            if (audio.ended) {
-                stopAll();
-                // If we were in cinema mode, maybe we want to keep it open, or loop?
-                // For now, just stop.
-            } else {
-                animationFrame = requestAnimationFrame(animate);
+                overlay.classList.add('opacity-0');
+                document.getElementById('renderModal').classList.add('scale-95');
+                setTimeout(()=>overlay.classList.add('hidden'), 300);
             }
         }
 
-        // --- 3D Backgrounds ---
-        function toggleBgMode() {
-            const mode = document.getElementById('bgMode').value;
-            const up = document.getElementById('videoUploadContainer');
-            const vid = document.getElementById('bgVideoPlayer');
-            const can = document.getElementById('canvas-container');
-            
-            up.style.display = mode === 'upload' ? 'block' : 'none';
-            vid.classList.toggle('hidden', mode !== 'upload');
-            can.classList.toggle('hidden', mode === 'upload');
-
-            if(mode !== 'upload') init3D();
+        function setFps(v) {
+            renderFps = v;
+            document.getElementById('fps30').className = v === 30 ? "flex-1 py-2 rounded-lg bg-gray-900 text-white text-xs font-bold shadow-sm transition-all" : "flex-1 py-2 rounded-lg text-gray-500 text-xs font-bold hover:text-gray-900 transition-all";
+            document.getElementById('fps60').className = v === 60 ? "flex-1 py-2 rounded-lg bg-gray-900 text-white text-xs font-bold shadow-sm transition-all" : "flex-1 py-2 rounded-lg text-gray-500 text-xs font-bold hover:text-gray-900 transition-all";
         }
 
+        function updateStats() {
+            const w = document.getElementById('scriptText').value.split(/\s+/).length;
+            document.getElementById('scriptStats').innerText = `${w}w | ~${Math.round(w/2.5)}s`;
+        }
+
+        function saveKey() {
+            // Hide trial banner if user enters a key manually
+            if(document.getElementById('apiKey').value.length > 10) {
+                 document.getElementById('trialBanner').classList.add('hidden');
+            }
+            localStorage.setItem('viralgen_key', document.getElementById('apiKey').value);
+            document.getElementById('keyStatus').classList.remove('hidden');
+        }
+        function loadKey() {
+            const k = localStorage.getItem('viralgen_key');
+            if(k) { document.getElementById('apiKey').value = k; document.getElementById('keyStatus').classList.remove('hidden'); }
+        }
+        function resetApp() { if(confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }
+        function randomTopic() { document.getElementById('topicInput').value = ["Horror Story", "Karen", "Revenge", "Bad Date"][Math.floor(Math.random()*4)]; }
+        function cleanScript() { document.getElementById('scriptText').value = document.getElementById('scriptText').value.replace(/[*_#]/g, ''); }
+        function updateMixer() { musicPlayer.volume = document.getElementById('musicVolSlider').value; }
+        
+        // Handlers
+        function handleVideoUpload(f) { if(f) { sourceVideo.src = URL.createObjectURL(f); document.getElementById('bgMode').value = 'upload'; toggleBgMode(); } }
+        function handleMusicUpload(i) { if(i.files[0]) { document.getElementById('musicName').innerText = i.files[0].name.slice(0,10)+'...'; musicPlayer.src = URL.createObjectURL(i.files[0]); } }
+        function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('border-blue-400','bg-blue-50'); }
+        function handleDragLeave(e) { e.preventDefault(); e.currentTarget.classList.remove('border-blue-400','bg-blue-50'); }
+        function handleDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('border-blue-400','bg-blue-50'); if(e.dataTransfer.files[0]) handleVideoUpload(e.dataTransfer.files[0]); }
+
+        // 3D Placeholder
         function init3D() {
-            const container = document.getElementById('canvas-container');
-            const mode = document.getElementById('bgMode').value;
-            if(mode === 'upload') return;
-
-            container.innerHTML = '';
+            if(renderer) return;
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(75, 1080/1920, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
-
-            if (mode === 'tunnel') {
-                const geo = new THREE.BoxGeometry(1, 1, 1);
-                const mat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true });
-                meshGroup = new THREE.Group();
-                for(let i=0; i<150; i++) {
-                    const m = new THREE.Mesh(geo, mat);
-                    m.position.set(Math.sin(i)*2, Math.cos(i)*2, -i);
-                    m.rotation.z = i;
-                    meshGroup.add(m);
-                }
-                camera.position.z = 5;
-            } else {
-                const geo = new THREE.BufferGeometry();
-                const verts = [];
-                for(let i=0; i<2000; i++) verts.push((Math.random()-0.5)*10, (Math.random()-0.5)*10, (Math.random()-0.5)*10);
-                geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-                const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05 });
-                meshGroup = new THREE.Points(geo, mat);
-                camera.position.z = 2;
-            }
+            renderer.setSize(1080, 1920);
+            const g = new THREE.BoxGeometry(1,1,1);
+            const m = new THREE.MeshBasicMaterial({ color: 0x4f46e5, wireframe: true });
+            meshGroup = new THREE.Group();
+            for(let i=0; i<80; i++) { const mesh = new THREE.Mesh(g, m); mesh.position.z = -i; mesh.rotation.z = i*0.1; meshGroup.add(mesh); }
             scene.add(meshGroup);
+            camera.position.z = 2;
         }
-
         function animate3D() {
-            if(!meshGroup) return;
-            const mode = document.getElementById('bgMode').value;
-            if (mode === 'tunnel') {
-                camera.position.z -= 0.1;
-                if(camera.position.z < -50) camera.position.z = 5;
-                meshGroup.rotation.z += 0.002;
-            } else {
-                meshGroup.rotation.y += 0.005;
-            }
-            renderer.render(scene, camera);
+            if(meshGroup) { meshGroup.rotation.z += 0.005; camera.position.z -= 0.05; if(camera.position.z < -20) camera.position.z = 2; renderer.render(scene, camera); }
         }
 
-        // --- Wav Util ---
-        function pcmToWav(samples, rate) {
-            const b = new ArrayBuffer(44 + samples.length);
-            const v = new DataView(b);
-            const w = (o, s) => { for(let i=0; i<s.length; i++) v.setUint8(o+i, s.charCodeAt(i)); };
-            w(0,'RIFF'); v.setUint32(4, 36+samples.length, true); w(8,'WAVE'); w(12,'fmt '); 
-            v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); 
-            v.setUint32(24, rate, true); v.setUint32(28, rate*2, true); v.setUint16(32, 2, true); 
-            v.setUint16(34, 16, true); w(36,'data'); v.setUint32(40, samples.length, true);
-            new Uint8Array(b, 44).set(samples);
-            return b;
-        }
-
-        // Init
-        window.addEventListener('resize', () => {
-             if(renderer && document.getElementById('canvas-container')) {
-                 const c = document.getElementById('canvas-container');
-                 renderer.setSize(c.clientWidth, c.clientHeight);
-                 camera.aspect = c.clientWidth / c.clientHeight;
-                 camera.updateProjectionMatrix();
-             }
-        });
-        init3D();
     </script>
 </body>
 </html>
