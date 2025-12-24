@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dingle AI | Content Creator Suite</title>
+    <title>Dingle AI v2.0 | Viral Content Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@800;900&family=Oswald:wght@700&family=Bangers&display=swap" rel="stylesheet">
@@ -28,15 +28,13 @@
             width: 100%; height: 4px; cursor: pointer; background: #334155; border-radius: 2px;
         }
 
-        /* Canvas Container to fit screen */
+        /* Canvas Container */
         .canvas-container {
             height: 90vh;
             aspect-ratio: 9/16;
             max-width: 100%;
             position: relative;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border-radius: 0; /* Removed rounded corners */
-            overflow: hidden;
             background: #000;
         }
 
@@ -56,24 +54,20 @@
 </head>
 <body class="h-screen w-screen flex flex-col md:flex-row" ondragover="event.preventDefault()" ondrop="event.preventDefault()">
 
-    <!-- Sidebar -->
     <div class="w-full md:w-[400px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shrink-0 h-full">
         
-        <!-- Header -->
         <div class="px-5 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900 sticky top-0 z-40">
             <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                <div class="bg-blue-600 text-white p-1 rounded shadow-sm"><i data-lucide="bot" class="w-4 h-4"></i></div>
-                DINGLE <span class="text-slate-500 font-medium">AI</span>
+                <div class="bg-orange-600 text-white p-1 rounded shadow-sm"><i data-lucide="flame" class="w-4 h-4"></i></div>
+                DINGLE <span class="text-slate-500 font-medium">AI v2.0</span>
             </h1>
             <button onclick="resetApp()" class="p-1.5 hover:bg-slate-800 rounded-md text-slate-400 hover:text-red-400 transition-colors" title="Reset">
                 <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
             </button>
         </div>
 
-        <!-- Scrollable Settings -->
         <div class="flex-1 overflow-y-auto p-5 space-y-6">
 
-            <!-- API Key -->
             <div class="space-y-2">
                 <div class="flex justify-between items-center">
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Access Key</label>
@@ -84,7 +78,6 @@
                 </div>
             </div>
 
-            <!-- 1. Script -->
             <section class="space-y-3">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xs font-bold text-white flex items-center gap-2">
@@ -92,21 +85,26 @@
                         SCRIPT
                     </h2>
                     <div class="flex gap-1">
-                        <button onclick="randomTopic()" class="p-1 text-slate-500 hover:text-white transition-colors" title="Random Topic"><i data-lucide="shuffle" class="w-3.5 h-3.5"></i></button>
                         <button onclick="cleanScript()" class="p-1 text-slate-500 hover:text-white transition-colors" title="Clean Formatting"><i data-lucide="eraser" class="w-3.5 h-3.5"></i></button>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <input id="topicInput" type="text" value="r/confessions" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 outline-none" placeholder="Topic...">
-                    <button onclick="generateScript()" id="scriptBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-lg font-bold text-xs transition-colors shadow-lg shadow-blue-900/20">Generate</button>
+                
+                <div class="grid grid-cols-2 gap-2">
+                     <button onclick="fetchReddit()" id="redditBtn" class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded-lg font-bold text-xs transition-colors shadow-lg shadow-orange-900/20 flex items-center justify-center gap-2">
+                        <i data-lucide="newspaper" class="w-3.5 h-3.5"></i> Fetch Viral
+                     </button>
+                     <button onclick="generateScript()" id="scriptBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-bold text-xs transition-colors shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> AI Gen
+                     </button>
                 </div>
+                <input id="topicInput" type="text" value="r/confessions" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 outline-none" placeholder="Subreddit or Topic...">
+
                 <div class="relative">
-                    <textarea id="scriptText" oninput="updateStats()" rows="5" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-xs focus:border-blue-500 outline-none text-slate-300 resize-none leading-relaxed custom-scrollbar" placeholder="Enter script here..."></textarea>
+                    <textarea id="scriptText" oninput="updateStats()" rows="5" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-xs focus:border-blue-500 outline-none text-slate-300 resize-none leading-relaxed custom-scrollbar" placeholder="Script goes here..."></textarea>
                     <div id="scriptStats" class="absolute bottom-2 right-2 text-[10px] text-slate-500 font-mono bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-700">0w | 0s</div>
                 </div>
             </section>
 
-            <!-- 2. Audio -->
             <section class="space-y-3">
                 <h2 class="text-xs font-bold text-white flex items-center gap-2">
                     <span class="w-5 h-5 rounded bg-slate-800 flex items-center justify-center text-slate-400 font-serif border border-slate-700">2</span>
@@ -120,14 +118,20 @@
 
                 <div class="bg-slate-800/50 border border-slate-700 rounded-lg p-3 space-y-3">
                     <div class="flex justify-between items-center">
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <div class="w-7 h-7 rounded bg-slate-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white text-slate-400 transition-colors"><i data-lucide="music" class="w-3.5 h-3.5"></i></div>
-                            <div>
+                        <div class="flex gap-2">
+                             <button onclick="loadPresetAudio()" class="w-7 h-7 rounded bg-green-600 hover:bg-green-700 text-white flex items-center justify-center transition-colors" title="Load Relaxed Preset">
+                                <i data-lucide="play-circle" class="w-4 h-4"></i>
+                             </button>
+                             <label class="w-7 h-7 rounded bg-slate-700 flex items-center justify-center hover:bg-blue-600 hover:text-white text-slate-400 transition-colors cursor-pointer" title="Upload Custom">
+                                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                <input type="file" id="bgMusicInput" accept="audio/*" class="sr-only-input" onchange="handleMusicUpload(this)">
+                             </label>
+                             <div class="flex flex-col justify-center">
                                 <div class="text-[10px] font-bold text-slate-300">Background Music</div>
                                 <div id="musicName" class="text-[9px] text-slate-500 truncate w-20">No file</div>
-                            </div>
-                            <input type="file" id="bgMusicInput" accept="audio/*" class="sr-only-input" onchange="handleMusicUpload(this)">
-                        </label>
+                             </div>
+                        </div>
+                        
                         <div class="flex items-center gap-2">
                             <i data-lucide="volume-2" class="w-3 h-3 text-slate-500"></i>
                             <input type="range" id="musicVolSlider" min="0" max="0.4" step="0.01" value="0.1" class="w-16" oninput="updateMixer()">
@@ -140,7 +144,6 @@
                 </button>
             </section>
 
-            <!-- 3. Visuals -->
             <section class="space-y-3">
                 <h2 class="text-xs font-bold text-white flex items-center gap-2">
                     <span class="w-5 h-5 rounded bg-slate-800 flex items-center justify-center text-slate-400 font-serif border border-slate-700">3</span>
@@ -149,17 +152,17 @@
 
                 <div class="space-y-2">
                     <select id="bgMode" onchange="toggleBgMode()" class="w-full bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-2 outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="upload">Custom Video (MP4)</option>
                         <option value="tunnel">3D: Neon Tunnel</option>
-                        <option value="particles">3D: Void Particles</option>
+                        <option value="minecraft">Gameplay: Minecraft</option>
+                        <option value="upload">Custom Video (MP4)</option>
                         <option value="solid">Solid Color</option>
                     </select>
                     
-                    <div id="videoUploadContainer" class="border border-dashed border-slate-600 rounded-lg p-4 text-center hover:bg-slate-800/50 hover:border-slate-400 transition-all cursor-pointer" onclick="document.getElementById('bgVideoInput').click()">
+                    <div id="videoUploadContainer" class="hidden border border-dashed border-slate-600 rounded-lg p-4 text-center hover:bg-slate-800/50 hover:border-slate-400 transition-all cursor-pointer" onclick="document.getElementById('bgVideoInput').click()">
                          <input type="file" id="bgVideoInput" accept="video/*" class="sr-only-input" onchange="handleVideoUpload(this.files[0])">
                          <div class="flex flex-col items-center gap-1">
                              <i data-lucide="upload-cloud" class="w-4 h-4 text-slate-500"></i>
-                             <span class="text-[10px] text-slate-400 font-medium">Click to Upload Video</span>
+                             <span class="text-[10px] text-slate-400 font-medium">Click to Upload</span>
                          </div>
                     </div>
                 </div>
@@ -170,14 +173,12 @@
                         <select id="fontSelect" onchange="redrawCanvas()" class="w-full bg-slate-900 border border-slate-700 rounded text-xs py-1.5 px-2 text-slate-300 focus:border-blue-500">
                             <option value="Montserrat">Montserrat (Viral)</option>
                             <option value="Bangers">Bangers (Comic)</option>
-                            <option value="Oswald">Oswald (Condensed)</option>
-                            <option value="Inter">Inter (Clean)</option>
                         </select>
                     </div>
                     
                     <div>
                         <label class="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Text Size</label>
-                        <input type="range" id="textSizeSlider" min="40" max="120" value="70" class="w-full" oninput="redrawCanvas()">
+                        <input type="range" id="textSizeSlider" min="40" max="120" value="75" class="w-full" oninput="redrawCanvas()">
                     </div>
                     <div>
                          <label class="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Y Position</label>
@@ -188,14 +189,13 @@
                         <span class="text-[10px] text-slate-400">Text Colors</span>
                         <div class="flex gap-2">
                             <input type="color" id="textColor" value="#ffffff" class="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent" oninput="redrawCanvas()">
-                            <input type="color" id="highlightColor" value="#fbbf24" class="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent" oninput="redrawCanvas()">
+                            <input type="color" id="highlightColor" value="#06b6d4" class="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent" oninput="redrawCanvas()">
                         </div>
                     </div>
                 </div>
             </section>
         </div>
 
-        <!-- Footer Actions -->
         <div class="p-4 border-t border-slate-800 bg-slate-900 space-y-3 z-40">
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="togglePlayback()" id="playBtn" disabled class="bg-slate-800 text-slate-500 cursor-not-allowed py-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 hover:bg-slate-700">
@@ -206,48 +206,30 @@
                 </button>
             </div>
             <div id="statusText" class="text-[10px] text-center text-slate-500 font-mono flex items-center justify-center gap-1.5 h-4">
-                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> Ready
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span> System Ready
             </div>
         </div>
     </div>
 
-    <!-- MAIN CANVAS AREA -->
     <div class="flex-1 bg-[#020617] relative flex justify-center items-center p-4 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
         
-        <!-- Toast -->
         <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
-        <!-- Responsive Canvas Container -->
         <div class="canvas-container" id="canvasWrapper">
-            <!-- The actual high-res canvas (scaled via CSS) -->
             <canvas id="mainCanvas" class="w-full h-full object-contain block bg-black"></canvas>
-            
-            <!-- Hidden Video Source -->
             <video id="sourceVideo" class="absolute top-0 left-0 w-px h-px opacity-0 pointer-events-none" loop muted playsinline crossorigin="anonymous"></video>
-
-            <!-- Play Overlay Icon -->
             <div id="playOverlay" onclick="togglePlayback()" class="absolute inset-0 z-10 cursor-pointer flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
                 <div class="bg-white/10 backdrop-blur-md p-6 rounded-full border border-white/20 shadow-2xl transform hover:scale-110 transition-transform">
                     <i data-lucide="play" class="w-12 h-12 text-white fill-white"></i>
                 </div>
             </div>
-
-            <!-- Export Modal Overlay -->
             <div id="cinemaOverlay" class="absolute inset-0 bg-black/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
                 <div class="bg-slate-900 p-6 rounded-2xl shadow-2xl text-center space-y-5 w-[80%] max-w-[300px] border border-slate-700" id="renderModal">
                     <div>
                         <h2 class="text-xl font-bold text-white">EXPORT VIDEO</h2>
                         <p class="text-[10px] text-slate-400">Settings</p>
                     </div>
-                    
                     <div class="space-y-3 text-left">
-                        <div class="space-y-1">
-                            <label class="text-[9px] font-bold text-slate-500 uppercase">Format</label>
-                            <select id="exportFormat" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white outline-none">
-                                <option value="mp4">MP4 (H.264) - Best</option>
-                                <option value="webm">WebM (VP9) - Web</option>
-                            </select>
-                        </div>
                         <div class="space-y-1">
                             <label class="text-[9px] font-bold text-slate-500 uppercase">Quality</label>
                             <select id="renderRes" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white outline-none">
@@ -255,27 +237,16 @@
                                 <option value="2160">4K (UHD)</option>
                             </select>
                         </div>
-                         <div class="space-y-1">
-                            <label class="text-[9px] font-bold text-slate-500 uppercase">FPS</label>
-                            <div class="flex bg-slate-800 border border-slate-700 rounded p-1">
-                                <button onclick="setFps(30)" id="fps30" class="flex-1 py-1.5 rounded bg-blue-600 text-white text-[10px] font-bold transition-all">30</button>
-                                <button onclick="setFps(60)" id="fps60" class="flex-1 py-1.5 rounded text-slate-400 text-[10px] font-bold hover:text-white transition-all">60</button>
-                            </div>
-                        </div>
                     </div>
-
                     <button onclick="startRendering()" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold text-xs shadow-lg shadow-red-900/20 transition-all flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-4 h-4"></i> START RENDER
                     </button>
                     <button onclick="toggleCinemaMode()" class="text-[10px] text-slate-500 hover:text-slate-300 underline">Cancel</button>
                 </div>
-
-                <!-- Rendering Progress -->
                 <div id="renderProgressContainer" class="hidden flex flex-col items-center justify-center space-y-4 w-full px-8">
                     <div class="w-16 h-16 border-4 border-slate-800 border-t-red-600 rounded-full animate-spin"></div>
                     <div class="text-center">
                         <h3 class="font-bold text-white text-lg animate-pulse">RENDERING...</h3>
-                        <p class="text-xs text-slate-400 mt-1">Real-time capture. Please wait.</p>
                         <p id="renderTime" class="text-[10px] text-slate-600 font-mono mt-2">0s</p>
                     </div>
                 </div>
@@ -300,7 +271,6 @@
         let audioCtx; 
         let scene, camera, renderer, meshGroup;
         let threeJsRunning = false;
-        let videoDuration = 0;
 
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d', { alpha: false });
@@ -314,7 +284,6 @@
             initCanvas();
             loadKey();
             init3D();
-            checkBrowserSupport();
         };
 
         function initCanvas() {
@@ -322,42 +291,22 @@
             canvas.height = CANVAS_HEIGHT;
             ctx.fillStyle = '#000';
             ctx.fillRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
-            drawCaption("PREVIEW"); 
+            drawCaption("DINGLE AI V2.0"); 
         }
 
-        function checkBrowserSupport() {
-            const types = ["video/mp4", "video/webm;codecs=vp9", "video/webm"];
-            const supported = types.filter(t => MediaRecorder.isTypeSupported(t));
-            const select = document.getElementById('exportFormat');
-            select.innerHTML = '';
-            
-            if(supported.some(t => t.includes('mp4'))) {
-                const opt = document.createElement('option'); opt.value = 'mp4'; opt.text = 'MP4 (H.264) - Best';
-                select.appendChild(opt);
-            }
-            const optWebm = document.createElement('option'); optWebm.value = 'webm'; optWebm.text = 'WebM (VP9)';
-            select.appendChild(optWebm);
-        }
-
-        // --- 3D SCENE (Three.js) ---
+        // --- 3D SCENE ---
         function init3D() {
             if(renderer) return;
             scene = new THREE.Scene();
             scene.fog = new THREE.FogExp2(0x000000, 0.1);
-            
             camera = new THREE.PerspectiveCamera(75, 1080/1920, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true });
             renderer.setSize(1080, 1920);
             
-            // Neon Tunnel Effect
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             meshGroup = new THREE.Group();
-            
             for (let i = 0; i < 60; i++) {
-                const material = new THREE.MeshBasicMaterial({ 
-                    color: new THREE.Color().setHSL(Math.random(), 0.7, 0.5), 
-                    wireframe: true 
-                });
+                const material = new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(Math.random(), 0.7, 0.5), wireframe: true });
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.position.z = -i * 0.5;
                 mesh.rotation.z = Math.random() * Math.PI;
@@ -370,29 +319,21 @@
 
         function animate3D() {
             if(!threeJsRunning) return;
-            const mode = document.getElementById('bgMode').value;
-            
-            if (mode === 'tunnel') {
-                meshGroup.rotation.z += 0.002;
-                meshGroup.children.forEach((mesh, i) => {
-                    mesh.position.z += 0.05;
-                    if(mesh.position.z > 2) mesh.position.z = -30;
-                });
-            } else if (mode === 'particles') {
-                 meshGroup.rotation.x += 0.001;
-                 meshGroup.rotation.y += 0.002;
-            }
+            meshGroup.rotation.z += 0.002;
+            meshGroup.children.forEach((mesh) => {
+                mesh.position.z += 0.05;
+                if(mesh.position.z > 2) mesh.position.z = -30;
+            });
             renderer.render(scene, camera);
         }
 
         // --- DRAWING LOOP ---
         function drawFrame() {
             const mode = document.getElementById('bgMode').value;
-
+            
             // 1. Draw Background
-            if (mode === 'upload') {
+            if (mode === 'upload' || mode === 'minecraft') {
                 if (sourceVideo.readyState >= 2) {
-                    // "Cover" fit algorithm
                     const rV = sourceVideo.videoWidth / sourceVideo.videoHeight;
                     const rC = canvas.width / canvas.height;
                     let dW, dH, dX, dY;
@@ -401,35 +342,27 @@
                     ctx.drawImage(sourceVideo, dX, dY, dW, dH);
                 }
             } else if (mode === 'solid') {
-                ctx.fillStyle = '#111827';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#111827'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             } else {
-                // 3D Render
-                threeJsRunning = true;
-                animate3D();
-                ctx.drawImage(renderer.domElement, 0, 0);
+                threeJsRunning = true; animate3D(); ctx.drawImage(renderer.domElement, 0, 0);
             }
 
             // 2. Dark Overlay
-            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // 3. Draw Text
             if ((isPlaying || isRendering) && !ttsPlayer.paused) {
                 const currentTime = ttsPlayer.currentTime;
-                // Find word that matches current time
                 const activeWord = wordMeta.find(w => currentTime >= w.start && currentTime <= w.end);
                 
-                if (activeWord) {
-                    drawCaption(activeWord.word);
-                } else {
-                    // Smooth fallback to previous or next
+                if (activeWord) drawCaption(activeWord.word);
+                else {
                      const lastWord = wordMeta[wordMeta.length - 1];
-                     if(currentTime > lastWord?.end) drawCaption(""); // End
-                     else if (wordMeta.length > 0 && currentTime < wordMeta[0].start) drawCaption(wordMeta[0].word); // Start
+                     if(currentTime > lastWord?.end) drawCaption(""); 
+                     else if (wordMeta.length > 0 && currentTime < wordMeta[0].start) drawCaption(wordMeta[0].word);
                 }
 
-                // Progress Bar
                 const prog = currentTime / ttsPlayer.duration;
                 const bw = canvas.width * 0.8, bh = 10, bx = (canvas.width - bw) / 2, by = canvas.height - 150;
                 ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fillRect(bx, by, bw, bh);
@@ -448,74 +381,46 @@
             const colHigh = document.getElementById('highlightColor').value;
             
             const clean = text.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-            // Highlight logic
-            const isHigh = ['WHAT','WHY','NO','STOP','DIED','KILLED','SECRET','MONEY','WTF','OMG', 'SCARY'].includes(clean) || clean.length > 8;
+            const isHigh = ['WHAT','WHY','NO','STOP','DIED','KILLED','SECRET','MONEY','WTF','OMG', 'SCARY', 'CHEATING', 'PREGNANT'].includes(clean) || clean.length > 8;
             
             const scale = canvas.width / 1080;
-            const finalSize = scale * (isHigh ? size * 1.5 : size * 2.5); // Slightly larger
+            const finalSize = scale * (isHigh ? size * 1.3 : size * 2.2); // Viral scaling
             
             ctx.font = `900 ${finalSize}px "${font}", sans-serif`;
-            ctx.textAlign = 'center'; 
-            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             
             const x = canvas.width / 2;
             const y = (canvas.height / 2) + (yOff * scale);
             
-            // Stroke
-            ctx.lineJoin = 'round'; 
-            ctx.miterLimit = 2; 
-            ctx.lineWidth = finalSize * 0.15; 
-            ctx.strokeStyle = 'black'; 
+            ctx.lineJoin = 'round'; ctx.miterLimit = 2; ctx.lineWidth = finalSize * 0.15; ctx.strokeStyle = 'black'; 
             ctx.strokeText(text.toUpperCase(), x, y);
-            
-            // Fill
             ctx.fillStyle = isHigh ? colHigh : colMain; 
             ctx.fillText(text.toUpperCase(), x, y);
         }
 
         function redrawCanvas() { if(!isPlaying) requestAnimationFrame(drawFrame); }
 
-        // --- PLAYBACK CONTROL ---
-        function togglePlayback() {
-            if (isPlaying) {
-                stopPlayback();
-            } else {
-                startPlayback();
-            }
-        }
+        // --- PLAYBACK ---
+        function togglePlayback() { isPlaying ? stopPlayback() : startPlayback(); }
 
         function startPlayback() {
             if (!audioBlob) return showToast("Generate audio first!", "error");
-            
-            // Ducking logic: lower music volume when TTS plays
             ttsPlayer.volume = 1.0;
-            ttsPlayer.playbackRate = 1.0;
-            
-            ttsPlayer.onplay = () => { 
-                musicPlayer.volume = document.getElementById('musicVolSlider').value * 0.2; // Duck music
-            };
-            ttsPlayer.onended = () => { 
-                musicPlayer.volume = document.getElementById('musicVolSlider').value; // Restore music
-                stopPlayback(); 
-            };
-            
+            ttsPlayer.onplay = () => { musicPlayer.volume = document.getElementById('musicVolSlider').value * 0.2; };
+            ttsPlayer.onended = () => { musicPlayer.volume = document.getElementById('musicVolSlider').value; stopPlayback(); };
             musicPlayer.volume = document.getElementById('musicVolSlider').value;
-            
             ttsPlayer.play();
             if(musicPlayer.src) musicPlayer.play();
-            if(document.getElementById('bgMode').value === 'upload') sourceVideo.play();
-            
+            if(['upload','minecraft'].includes(document.getElementById('bgMode').value)) sourceVideo.play();
             isPlaying = true;
             updateUIState(true);
             animate();
         }
 
         function stopPlayback() {
-            ttsPlayer.pause(); 
-            ttsPlayer.currentTime = 0;
-            musicPlayer.pause(); 
-            if(document.getElementById('bgMode').value === 'upload') sourceVideo.pause();
-            
+            ttsPlayer.pause(); ttsPlayer.currentTime = 0;
+            musicPlayer.pause();
+            if(['upload','minecraft'].includes(document.getElementById('bgMode').value)) sourceVideo.pause();
             isPlaying = false;
             cancelAnimationFrame(animationId);
             updateUIState(false);
@@ -524,24 +429,49 @@
 
         function updateUIState(playing) {
             const btn = document.getElementById('playBtn');
-            if(playing) {
-                btn.innerHTML = '<i data-lucide="square" class="w-4 h-4"></i> STOP';
-                btn.className = "bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2";
-            } else {
-                btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> PREVIEW';
-                btn.className = "bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2";
-            }
+            btn.innerHTML = playing ? '<i data-lucide="square" class="w-4 h-4"></i> STOP' : '<i data-lucide="play" class="w-4 h-4"></i> PREVIEW';
+            btn.className = playing ? "bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2" : "bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2";
             lucide.createIcons();
         }
 
-        function animate() { 
-            if(isPlaying) { 
-                drawFrame(); 
-                animationId = requestAnimationFrame(animate); 
-            } 
+        function animate() { if(isPlaying) { drawFrame(); animationId = requestAnimationFrame(animate); } }
+
+        // --- FETCH REDDIT (VIRAL UPGRADE) ---
+        async function fetchReddit() {
+            const btn = document.getElementById('redditBtn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<div class="loader w-3 h-3"></div>'; btn.disabled = true;
+
+            const subs = ['confessions', 'tifu', 'AmItheAsshole', 'entitledparents'];
+            const sub = subs[Math.floor(Math.random() * subs.length)];
+            
+            try {
+                // Fetch top from today
+                const res = await fetch(`https://www.reddit.com/r/${sub}/top.json?limit=10&t=day`);
+                const data = await res.json();
+                
+                // Get a random post from the top 10 that involves text
+                const posts = data.data.children.filter(p => p.data.selftext.length > 50 && p.data.selftext.length < 1500);
+                if(posts.length === 0) throw new Error("No good posts found, try again.");
+                
+                const post = posts[Math.floor(Math.random() * posts.length)].data;
+                let text = post.selftext.replace(/Edit:?.*$/si, '').trim(); // Remove edits
+                
+                // Cleanup text for TTS
+                text = text.replace(/\(.*\)/g, '').replace(/\[.*\]/g, ''); 
+                if(text.length > 600) text = text.substring(0, 600) + "..."; // Cap length
+
+                document.getElementById('topicInput').value = `r/${sub}: ${post.title}`;
+                document.getElementById('scriptText').value = `${post.title}. ${text}`;
+                updateStats();
+                showToast(`Fetched from r/${sub}!`);
+            } catch(e) {
+                showToast("Failed to fetch Reddit. Try again.", "error");
+            }
+            btn.innerHTML = originalHtml; btn.disabled = false;
         }
 
-        // --- EXPORT LOGIC (MP4/WebM) ---
+        // --- EXPORT ---
         function ensureAudioContext() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -550,138 +480,87 @@
 
         async function startRendering() {
             if (!audioBlob) return showToast("No audio to render", "error");
-            
             isRendering = true;
             document.getElementById('renderModal').classList.add('hidden');
             document.getElementById('renderProgressContainer').classList.remove('hidden');
 
-            const exportFormat = document.getElementById('exportFormat').value;
             const res = parseInt(document.getElementById('renderRes').value);
+            canvas.width = res; canvas.height = res * (16/9);
             
-            // 1. Setup Canvas Resolution
-            canvas.width = res; 
-            canvas.height = res * (16/9);
-            
-            // 2. Setup Audio Mixer for Recording
             const ctxTarget = ensureAudioContext();
             const dest = ctxTarget.createMediaStreamDestination();
             
-            // TTS Track
             const audioBuffer = await fetch(ttsPlayer.src).then(r=>r.arrayBuffer()).then(b=>ctxTarget.decodeAudioData(b));
             const ttsSource = ctxTarget.createBufferSource();
-            ttsSource.buffer = audioBuffer;
-            ttsSource.connect(dest);
+            ttsSource.buffer = audioBuffer; ttsSource.connect(dest);
             
-            // Music Track
             let musicSource;
             if(musicPlayer.src) {
-                try {
-                    const mBuf = await fetch(musicPlayer.src).then(r=>r.arrayBuffer()).then(b=>ctxTarget.decodeAudioData(b));
-                    musicSource = ctxTarget.createBufferSource();
-                    musicSource.buffer = mBuf;
-                    musicSource.loop = true;
-                    const gain = ctxTarget.createGain();
-                    gain.gain.value = document.getElementById('musicVolSlider').value * 0.2; // Apply ducking for export
-                    musicSource.connect(gain).connect(dest);
-                } catch(e) { console.warn("Music load failed for render", e); }
+                const mBuf = await fetch(musicPlayer.src).then(r=>r.arrayBuffer()).then(b=>ctxTarget.decodeAudioData(b));
+                musicSource = ctxTarget.createBufferSource();
+                musicSource.buffer = mBuf; musicSource.loop = true;
+                const gain = ctxTarget.createGain();
+                gain.gain.value = document.getElementById('musicVolSlider').value * 0.2;
+                musicSource.connect(gain).connect(dest);
             }
 
-            // 3. Init Recorder
             const stream = canvas.captureStream(renderFps);
             const combinedStream = new MediaStream([...stream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
-            
-            let mimeType = 'video/webm'; // Default safe fallback
-            if (exportFormat === 'mp4' && MediaRecorder.isTypeSupported('video/mp4; codecs=avc1.42E01E,mp4a.40.2')) {
-                 mimeType = 'video/mp4; codecs=avc1.42E01E,mp4a.40.2';
-            } else if (exportFormat === 'mp4' && MediaRecorder.isTypeSupported('video/mp4')) {
-                 mimeType = 'video/mp4';
-            } else if (MediaRecorder.isTypeSupported('video/webm; codecs=vp9')) {
-                 mimeType = 'video/webm; codecs=vp9';
-            }
-
-            const recorder = new MediaRecorder(combinedStream, {
-                mimeType: mimeType,
-                videoBitsPerSecond: res === 2160 ? 25000000 : 8000000 // High bitrate
-            });
-            
+            const recorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm; codecs=vp9', videoBitsPerSecond: 8000000 });
             const chunks = [];
             recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
             
             recorder.onstop = () => {
-                const b = new Blob(chunks, { type: mimeType });
+                const b = new Blob(chunks, { type: 'video/webm' });
                 const url = URL.createObjectURL(b);
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = `DingleAI_Export_${Date.now()}.${exportFormat}`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                a.href = url; a.download = `Dingle_Viral_${Date.now()}.webm`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 
-                // Cleanup
                 isRendering = false;
-                canvas.width = CANVAS_WIDTH; 
-                canvas.height = CANVAS_HEIGHT;
+                canvas.width = CANVAS_WIDTH; canvas.height = CANVAS_HEIGHT;
                 document.getElementById('renderProgressContainer').classList.add('hidden');
                 document.getElementById('renderModal').classList.remove('hidden');
                 toggleCinemaMode();
                 showToast("Export Successful!");
             };
 
-            // 4. Start Loop
-            recorder.start();
-            ttsSource.start(0);
-            if(musicSource) musicSource.start(0);
-            if(document.getElementById('bgMode').value === 'upload') {
-                sourceVideo.currentTime = 0;
-                sourceVideo.play();
-            }
+            recorder.start(); ttsSource.start(0); if(musicSource) musicSource.start(0);
+            if(['upload','minecraft'].includes(document.getElementById('bgMode').value)) { sourceVideo.currentTime = 0; sourceVideo.play(); }
 
             const duration = ttsPlayer.duration * 1000;
             const startTime = performance.now();
-            const timeDisplay = document.getElementById('renderTime');
-
+            
             function renderLoop() {
                 if(!isRendering) return;
-                
-                drawFrame(); // Draw 3D/Video/Text
-                
+                drawFrame();
                 const elapsed = performance.now() - startTime;
-                timeDisplay.innerText = (elapsed / 1000).toFixed(1) + "s / " + (duration/1000).toFixed(1) + "s";
-
-                if (elapsed > duration + 500) { // +500ms buffer
-                    recorder.stop();
-                    ttsSource.stop();
-                    if(musicSource) musicSource.stop();
-                    sourceVideo.pause();
-                } else {
-                    requestAnimationFrame(renderLoop);
-                }
+                document.getElementById('renderTime').innerText = (elapsed / 1000).toFixed(1) + "s / " + (duration/1000).toFixed(1) + "s";
+                if (elapsed > duration + 500) {
+                    recorder.stop(); ttsSource.stop(); if(musicSource) musicSource.stop();
+                    if(['upload','minecraft'].includes(document.getElementById('bgMode').value)) sourceVideo.pause();
+                } else requestAnimationFrame(renderLoop);
             }
             renderLoop();
         }
 
-        // --- GENERATION (API) ---
+        // --- ASSET HANDLERS ---
         async function generateScript() {
             const key = document.getElementById('apiKey').value;
             if(!key) return showToast("API Key Required", "error");
-            
             const btn = document.getElementById('scriptBtn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<div class="loader w-3 h-3"></div>'; btn.disabled = true;
-
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Write a viral short-form script about: ${document.getElementById('topicInput').value}. Style: First-person Reddit confession. Length: 100 words max. No formatting, just raw text.` }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `Write a viral short-form script about: ${document.getElementById('topicInput').value}. Style: First-person Reddit confession. Length: 120 words max. Hook the first sentence. No formatting.` }] }] })
                 });
                 const d = await res.json();
-                if(d.error) throw new Error(d.error.message);
-                
                 document.getElementById('scriptText').value = d.candidates[0].content.parts[0].text;
                 updateStats();
                 showToast("Script Generated");
-            } catch(e) { showToast(e.message, "error"); }
-            
+            } catch(e) { showToast("AI Error", "error"); }
             btn.innerHTML = originalText; btn.disabled = false;
         }
 
@@ -689,66 +568,44 @@
             const key = document.getElementById('apiKey').value;
             const text = document.getElementById('scriptText').value;
             if(!key || !text) return showToast("API Key & Text required", "error");
-
             const btn = document.getElementById('audioBtn');
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<div class="loader"></div> Processing...'; btn.disabled = true;
-
             try {
-                // 1. Get Audio
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${key}`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ contents: [{ parts: [{ text: text }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: selectedVoice } } } } })
                 });
                 const d = await res.json();
-                if(d.error) throw new Error(d.error.message);
-
-                // 2. Decode Audio
                 const bin = atob(d.candidates[0].content.parts[0].inlineData.data);
                 const bytes = new Uint8Array(bin.length);
                 for(let i=0; i<bin.length; i++) bytes[i] = bin.charCodeAt(i);
                 
-                // Wrap as WAV
                 const wav = createWav(bytes);
                 audioBlob = new Blob([wav], { type: 'audio/wav' });
-                const url = URL.createObjectURL(audioBlob);
-                ttsPlayer.src = url;
-
-                // 3. IMPROVED SYNC ALGORITHM
-                // Wait for metadata to get exact duration
+                ttsPlayer.src = URL.createObjectURL(audioBlob);
+                
                 ttsPlayer.onloadedmetadata = () => {
                     const totalDuration = ttsPlayer.duration;
-                    const cleanText = text.replace(/\s+/g, ' ').trim();
-                    const words = cleanText.split(' ');
-                    
+                    const words = text.replace(/\s+/g, ' ').trim().split(' ');
                     let totalWeight = 0;
                     const wordWeights = words.map(w => {
-                        // Logic: Longer words take longer. Punctuation adds pause weight.
                         let weight = w.length;
-                        if(w.includes('.') || w.includes('?') || w.includes('!')) weight += 6; // Sentence break
-                        else if(w.includes(',')) weight += 3; // Comma pause
+                        if(w.includes('.') || w.includes('?')) weight += 6;
+                        else if(w.includes(',')) weight += 3;
                         totalWeight += weight;
                         return { word: w, weight: weight };
                     });
-
                     let currentTime = 0;
                     wordMeta = wordWeights.map(item => {
                         const duration = (item.weight / totalWeight) * totalDuration;
-                        const meta = {
-                            word: item.word,
-                            start: currentTime,
-                            end: currentTime + duration
-                        };
+                        const meta = { word: item.word, start: currentTime, end: currentTime + duration };
                         currentTime += duration;
                         return meta;
                     });
-                    
-                    showToast("Audio & Sync Ready");
-                    enableControls();
+                    showToast("Audio Ready"); enableControls();
                 };
-
             } catch(e) { showToast(e.message, "error"); }
-            
             btn.innerHTML = originalHtml; btn.disabled = false;
         }
 
@@ -757,121 +614,62 @@
             const buffer = new ArrayBuffer(44 + bytes.length);
             const view = new DataView(buffer);
             const writeString = (view, offset, string) => { for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i)); };
-            
-            writeString(view, 0, 'RIFF');
-            view.setUint32(4, 36 + bytes.length, true);
-            writeString(view, 8, 'WAVE');
-            writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true);
-            view.setUint16(22, 1, true);
-            view.setUint32(24, 24000, true);
-            view.setUint32(28, 48000, true);
-            view.setUint16(32, 2, true);
-            view.setUint16(34, 16, true);
-            writeString(view, 36, 'data');
-            view.setUint32(40, bytes.length, true);
-            new Uint8Array(buffer, 44).set(bytes);
+            writeString(view, 0, 'RIFF'); view.setUint32(4, 36 + bytes.length, true); writeString(view, 8, 'WAVE'); writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, 24000, true);
+            view.setUint32(28, 48000, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); writeString(view, 36, 'data');
+            view.setUint32(40, bytes.length, true); new Uint8Array(buffer, 44).set(bytes);
             return buffer;
         }
-
         function enableControls() {
-            const playBtn = document.getElementById('playBtn');
-            playBtn.disabled = false;
-            playBtn.classList.replace('bg-slate-800', 'bg-blue-600');
-            playBtn.classList.replace('text-slate-500', 'text-white');
-            playBtn.classList.replace('cursor-not-allowed', 'cursor-pointer');
-
-            const renderBtn = document.getElementById('renderBtn');
-            renderBtn.disabled = false;
-            renderBtn.classList.replace('bg-slate-800', 'bg-blue-600');
-            renderBtn.classList.replace('text-slate-500', 'text-white');
-            renderBtn.classList.replace('cursor-not-allowed', 'cursor-pointer');
+            ['playBtn','renderBtn'].forEach(id => {
+                const b = document.getElementById(id); b.disabled = false; b.classList.replace('cursor-not-allowed', 'cursor-pointer'); b.classList.replace('text-slate-500', 'text-white'); b.classList.replace('bg-slate-800', 'bg-blue-600');
+            });
         }
-
         function showToast(msg, type='success') {
             const el = document.createElement('div');
             el.className = `px-4 py-3 rounded-lg text-xs font-bold shadow-lg flex items-center gap-2 transform transition-all translate-x-4 opacity-0 ${type==='error'?'bg-red-500 text-white':'bg-green-500 text-white'}`;
-            el.innerHTML = type==='error' ? `<i data-lucide="alert-circle" class="w-4 h-4"></i> ${msg}` : `<i data-lucide="check-circle" class="w-4 h-4"></i> ${msg}`;
-            document.getElementById('toastContainer').appendChild(el); 
-            lucide.createIcons();
-            requestAnimationFrame(() => el.classList.remove('translate-x-4', 'opacity-0')); 
+            el.innerHTML = `<i data-lucide="${type==='error'?'alert-circle':'check-circle'}" class="w-4 h-4"></i> ${msg}`;
+            document.getElementById('toastContainer').appendChild(el); lucide.createIcons();
+            requestAnimationFrame(() => el.classList.remove('translate-x-4', 'opacity-0'));
             setTimeout(() => { el.style.opacity = '0'; setTimeout(()=>el.remove(),300) }, 3000);
         }
-
         function selectVoice(v) {
             selectedVoice = v;
-            document.querySelectorAll('.voice-btn').forEach(b => {
-                b.className = "voice-btn relative bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-500 rounded-lg py-2 text-xs font-bold transition-all";
-            });
-            const active = document.getElementById(`voice-${v}`);
-            active.className = "voice-btn relative bg-blue-600 text-white border border-transparent rounded-lg py-2 text-xs font-bold shadow transition-all";
+            document.querySelectorAll('.voice-btn').forEach(b => b.className = "voice-btn relative bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-500 rounded-lg py-2 text-xs font-bold transition-all");
+            document.getElementById(`voice-${v}`).className = "voice-btn relative bg-blue-600 text-white border border-transparent rounded-lg py-2 text-xs font-bold shadow transition-all";
         }
-
-        function updateStats() {
-            const w = document.getElementById('scriptText').value.split(/\s+/).filter(x=>x).length;
-            document.getElementById('scriptStats').innerText = `${w}w | ~${Math.ceil(w/2.5)}s`;
-        }
-
-        function saveKey() {
-            localStorage.setItem('dingle_key', document.getElementById('apiKey').value);
-            document.getElementById('keyStatus').classList.remove('hidden');
-        }
-        function loadKey() {
-            const k = localStorage.getItem('dingle_key');
-            if(k) { document.getElementById('apiKey').value = k; document.getElementById('keyStatus').classList.remove('hidden'); }
-        }
-        function resetApp() { if(confirm("Clear workspace?")) { location.reload(); } }
-        function randomTopic() { document.getElementById('topicInput').value = ["TIFU by...", "My Boss...", "Worst Date...", "Ghost Story"][Math.floor(Math.random()*4)]; }
-        function cleanScript() { 
-            const t = document.getElementById('scriptText');
-            t.value = t.value.replace(/[*#_`]/g, ''); 
-        }
+        function updateStats() { document.getElementById('scriptStats').innerText = `${document.getElementById('scriptText').value.split(/\s+/).filter(x=>x).length}w`; }
+        function saveKey() { localStorage.setItem('dingle_key', document.getElementById('apiKey').value); document.getElementById('keyStatus').classList.remove('hidden'); }
+        function loadKey() { const k = localStorage.getItem('dingle_key'); if(k) { document.getElementById('apiKey').value = k; document.getElementById('keyStatus').classList.remove('hidden'); } }
+        function resetApp() { if(confirm("Clear workspace?")) location.reload(); }
+        function cleanScript() { const t = document.getElementById('scriptText'); t.value = t.value.replace(/[*#_`]/g, ''); }
         
         function handleMusicUpload(el) { if(el.files[0]){ document.getElementById('musicName').innerText = el.files[0].name; musicPlayer.src = URL.createObjectURL(el.files[0]); } }
-        function updateMixer() { 
-            if(!isPlaying) musicPlayer.volume = document.getElementById('musicVolSlider').value; 
-        }
-
+        function loadPresetAudio() { musicPlayer.src = "relaxed.mp3"; document.getElementById('musicName').innerText = "Preset: Relaxed"; showToast("Preset Loaded"); }
+        function updateMixer() { if(!isPlaying) musicPlayer.volume = document.getElementById('musicVolSlider').value; }
+        
         function handleVideoUpload(f) { 
             if(f) { 
-                try {
-                    const url = URL.createObjectURL(f); 
-                    sourceVideo.src = url; 
-                    document.getElementById('bgMode').value = 'upload'; 
-                    toggleBgMode(); 
-                } catch(e) { showToast("Video Load Failed", "error"); }
+                sourceVideo.src = URL.createObjectURL(f); document.getElementById('bgMode').value = 'upload'; toggleBgMode(); 
             } 
         }
-
         function toggleBgMode() {
             const mode = document.getElementById('bgMode').value;
-            if(mode !== 'upload' && mode !== 'solid') init3D();
-            
-            // UI Toggle
             const uploader = document.getElementById('videoUploadContainer');
-            if(mode === 'upload') {
-                uploader.classList.remove('opacity-50', 'pointer-events-none');
+            if(mode === 'minecraft') {
+                sourceVideo.src = 'minecraft.mp4';
+                sourceVideo.load();
+                uploader.classList.add('hidden');
+                init3D(); // Keep 3D context active just in case
+            } else if(mode === 'upload') {
+                uploader.classList.remove('hidden');
             } else {
-                uploader.classList.add('opacity-50', 'pointer-events-none');
+                uploader.classList.add('hidden');
+                init3D();
             }
             redrawCanvas();
         }
-
-        function toggleCinemaMode() {
-            const overlay = document.getElementById('cinemaOverlay');
-            if(overlay.classList.contains('hidden')) {
-                overlay.classList.remove('hidden');
-            } else {
-                overlay.classList.add('hidden');
-            }
-        }
-        
-        function setFps(v) {
-            renderFps = v;
-            document.getElementById('fps30').className = v===30 ? "flex-1 py-1.5 rounded bg-blue-600 text-white text-[10px] font-bold transition-all" : "flex-1 py-1.5 rounded text-slate-400 text-[10px] font-bold hover:text-white transition-all";
-            document.getElementById('fps60').className = v===60 ? "flex-1 py-1.5 rounded bg-blue-600 text-white text-[10px] font-bold transition-all" : "flex-1 py-1.5 rounded text-slate-400 text-[10px] font-bold hover:text-white transition-all";
-        }
+        function toggleCinemaMode() { document.getElementById('cinemaOverlay').classList.toggle('hidden'); }
     </script>
 </body>
 </html>
