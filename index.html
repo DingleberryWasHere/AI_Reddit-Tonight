@@ -36,6 +36,11 @@
         .sr-only-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
         .loader { border: 2px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 2px solid #000; width: 16px; height: 16px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Tutorial Modal Transitions */
+        .step-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .step-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col md:flex-row">
@@ -47,9 +52,14 @@
                 <div class="bg-black text-white p-1.5 rounded-lg"><i data-lucide="zap" class="w-4 h-4"></i></div>
                 Dingle<span class="text-gray-400">AI</span>
             </h1>
-            <button onclick="saveSettings()" class="text-xs font-medium text-gray-400 hover:text-black transition-colors flex items-center gap-1">
-                <i data-lucide="save" class="w-3 h-3"></i> Save Key
-            </button>
+            <div class="flex gap-2">
+                <button onclick="startTutorial()" class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-black hover:text-white transition-all" title="Help / Tutorial">
+                    <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="saveSettings()" class="text-xs font-medium text-gray-400 hover:text-black transition-colors flex items-center gap-1">
+                    <i data-lucide="save" class="w-3 h-3"></i> Save Key
+                </button>
+            </div>
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
@@ -187,6 +197,112 @@
         </div>
     </div>
 
+    <div id="tutorialOverlay" class="fixed inset-0 bg-black/80 z-[100] hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-[90%] max-w-[500px] shadow-2xl overflow-hidden relative">
+            
+            <div id="step-0" class="step-content p-8 text-center space-y-4 active">
+                <div class="w-16 h-16 bg-black text-white rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg">
+                    <i data-lucide="zap" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-black text-gray-900">Welcome to Dingle AI</h2>
+                <p class="text-sm text-gray-500 leading-relaxed">
+                    Hey there, you seem new! This tool allows you to generate <b>Viral Shorts</b> in seconds using AI.
+                    <br><br>
+                    Want a quick tour of how the engine works?
+                </p>
+                <div class="pt-4 grid grid-cols-2 gap-3">
+                    <button onclick="closeTutorial()" class="py-3 rounded-xl text-xs font-bold text-gray-400 hover:bg-gray-50 hover:text-gray-900 transition-all">Skip</button>
+                    <button onclick="nextStep(1)" class="py-3 rounded-xl text-xs font-bold bg-black text-white hover:bg-gray-800 shadow-lg transition-all">Start Tour</button>
+                </div>
+            </div>
+
+            <div id="step-1" class="step-content p-8 text-left space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-sm">1</span>
+                    <h3 class="font-bold text-lg">The Engine Key</h3>
+                </div>
+                <p class="text-xs text-gray-500 leading-relaxed">
+                    To power the AI, you need a <b>Gemini API Key</b>. It's free from Google AI Studio.
+                    <br><br>
+                    Paste it into the top box on the left. We save it to your browser automatically, so you only do this once.
+                </p>
+                <div class="pt-6 flex justify-between items-center">
+                    <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Step 1 of 5</span>
+                    <button onclick="nextStep(2)" class="px-6 py-2 rounded-lg text-xs font-bold bg-black text-white hover:bg-gray-800 transition-all">Next</button>
+                </div>
+            </div>
+
+            <div id="step-2" class="step-content p-8 text-left space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-sm">2</span>
+                    <h3 class="font-bold text-lg">The Content</h3>
+                </div>
+                <p class="text-xs text-gray-500 leading-relaxed">
+                    You have two power buttons in the "SCRIPT" section:
+                </p>
+                <ul class="text-xs text-gray-600 space-y-2 list-disc pl-4">
+                    <li><b>Fetch Viral:</b> Scrapes a real, high-engagement story from Reddit automatically.</li>
+                    <li><b>AI Gen:</b> Writes a brand new story based on your topic.</li>
+                </ul>
+                <div class="pt-6 flex justify-between items-center">
+                    <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Step 2 of 5</span>
+                    <button onclick="nextStep(3)" class="px-6 py-2 rounded-lg text-xs font-bold bg-black text-white hover:bg-gray-800 transition-all">Next</button>
+                </div>
+            </div>
+
+            <div id="step-3" class="step-content p-8 text-left space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-sm">3</span>
+                    <h3 class="font-bold text-lg">The Audio</h3>
+                </div>
+                <p class="text-xs text-gray-500 leading-relaxed">
+                    Select a voice (Puck or Kore). You can also upload background music or use the "Relaxed" preset.
+                    <br><br>
+                    <b class="text-red-500">IMPORTANT:</b> You MUST click <b>"Generate Audio"</b> every time you change the script. This builds the audio file for the video.
+                </p>
+                <div class="pt-6 flex justify-between items-center">
+                    <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Step 3 of 5</span>
+                    <button onclick="nextStep(4)" class="px-6 py-2 rounded-lg text-xs font-bold bg-black text-white hover:bg-gray-800 transition-all">Next</button>
+                </div>
+            </div>
+
+            <div id="step-4" class="step-content p-8 text-left space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-sm">4</span>
+                    <h3 class="font-bold text-lg">The Visuals</h3>
+                </div>
+                <p class="text-xs text-gray-500 leading-relaxed">
+                    Choose "Minecraft Gameplay" for instant viral retention, or upload your own MP4 video.
+                    <br><br>
+                    Use the sliders to adjust text position and customize colors to match the vibe.
+                </p>
+                <div class="pt-6 flex justify-between items-center">
+                    <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Step 4 of 5</span>
+                    <button onclick="nextStep(5)" class="px-6 py-2 rounded-lg text-xs font-bold bg-black text-white hover:bg-gray-800 transition-all">Next</button>
+                </div>
+            </div>
+
+            <div id="step-5" class="step-content p-8 text-left space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-sm">5</span>
+                    <h3 class="font-bold text-lg">Ready to Launch?</h3>
+                </div>
+                <p class="text-xs text-gray-500 leading-relaxed">
+                    Click <b>PREVIEW</b> to watch your creation in real-time.
+                    <br><br>
+                    When you are happy, click <b>EXPORT</b>. The engine will render a high-quality .webm video for you to upload to YouTube Shorts or TikTok.
+                    <br><br>
+                    <b>Go get those views! 🚀</b>
+                </p>
+                <div class="pt-6 flex justify-between items-center">
+                    <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Done</span>
+                    <button onclick="closeTutorial()" class="px-6 py-2 rounded-lg text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg transition-all">Let's Cook</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script>
         // --- CORE ENGINE (Web Audio API) ---
         const CONFIG = { width: 1080, height: 1920 };
@@ -221,11 +337,39 @@
             video.load();
             
             renderPreview();
+
+            // Check Tutorial
+            if(!localStorage.getItem('dingle_visited_v3')) {
+                startTutorial();
+            }
         };
 
         function initAudio() {
             if (!STATE.audioCtx) STATE.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (STATE.audioCtx.state === 'suspended') STATE.audioCtx.resume();
+        }
+
+        // --- TUTORIAL LOGIC ---
+        function startTutorial() {
+            document.getElementById('tutorialOverlay').classList.remove('hidden');
+            showStep(0);
+        }
+
+        function nextStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            // Show specific step
+            document.getElementById(`step-${step}`).classList.add('active');
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+        }
+
+        function closeTutorial() {
+            document.getElementById('tutorialOverlay').classList.add('hidden');
+            localStorage.setItem('dingle_visited_v3', 'true');
         }
 
         // --- SETTINGS MGR ---
@@ -330,7 +474,6 @@
 
             try {
                 // 1. Fetch TTS
-                // Use default flash-tts unless user specifically selected Pro model (which might not support tts endpoint, safe to default to flash-preview-tts or 2.0-flash-exp)
                 const endpoint = "gemini-2.0-flash-exp"; 
                 
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${endpoint}:generateContent?key=${key}`, {
