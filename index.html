@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dingle AI | Future Studio</title>
+    <title>Dingle AI | Ultimate Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -11,21 +11,43 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #111827; overflow: hidden; }
+        
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        /* Sliders */
         input[type=range] { -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #000; margin-top: -5px; cursor: pointer; }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: #e5e7eb; border-radius: 2px; }
-        .canvas-container { height: 90vh; aspect-ratio: 9/16; max-width: 100%; position: relative; background: #000; border-radius: 12px; overflow: hidden; border: 4px solid #fff; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%;
+            background: #000; margin-top: -5px; cursor: pointer;
+            box-shadow: 0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e5e7eb; border-radius: 2px;
+        }
+
+        /* Canvas */
+        .canvas-container {
+            height: 90vh; aspect-ratio: 9/16; max-width: 100%; position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background: #000; border-radius: 12px; overflow: hidden; border: 4px solid #fff;
+        }
+        
+        /* Modal Transitions */
         .modal { opacity: 0; pointer-events: none; transition: all 0.2s ease-in-out; transform: scale(0.95); }
         .modal.open { opacity: 1; pointer-events: auto; transform: scale(1); }
-        .gated { filter: blur(4px); pointer-events: none; user-select: none; opacity: 0.6; transition: all 0.3s; }
+
+        .btn-active { background: #000; color: #fff; border-color: transparent; }
+        .btn-inactive { background: #fff; color: #6b7280; border-color: #e5e7eb; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col md:flex-row">
 
     <div class="w-full md:w-[400px] flex flex-col border-r border-gray-200 bg-white z-30 shrink-0 h-full shadow-xl">
+        
         <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
             <h1 class="text-lg font-bold tracking-tight text-gray-900 flex items-center gap-2">
                 <div class="bg-black text-white p-1.5 rounded-lg"><i data-lucide="zap" class="w-4 h-4"></i></div>
@@ -33,88 +55,118 @@
             </h1>
             <div class="flex items-center gap-2">
                 <div id="authContainer">
-                    <button onclick="loginPuter()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 shadow-sm">
-                        <i data-lucide="log-in" class="w-3 h-3"></i> Sign In
+                    <button onclick="loginPuter()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
+                        <i data-lucide="log-in" class="w-3 h-3"></i> Login
                     </button>
                 </div>
-                <button onclick="toggleSettings()" class="bg-gray-100 hover:bg-black hover:text-white text-gray-600 p-1.5 rounded-lg transition-all" title="Settings">
+                <button onclick="toggleSettings()" class="bg-gray-100 hover:bg-black hover:text-white text-gray-600 p-1.5 rounded-lg transition-all">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                 </button>
             </div>
         </div>
 
         <div class="flex-1 overflow-y-auto p-5 space-y-6">
+
             <section class="space-y-3">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
                         <span class="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">1</span> SCRIPT
                     </h2>
                     <div class="flex gap-2">
-                        <button onclick="fetchReddit()" class="bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i> Viral</button>
-                        <button onclick="generateAIScript()" id="aiBtn" class="bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all flex items-center gap-1"><i data-lucide="sparkles" class="w-3 h-3"></i> AI Write</button>
+                        <button onclick="fetchReddit()" class="bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all flex items-center gap-1">
+                            <i data-lucide="flame" class="w-3 h-3"></i> Viral
+                        </button>
+                        <button onclick="generateAIScript()" id="aiBtn" class="bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 px-2.5 py-1 rounded-md text-[10px] font-bold transition-all flex items-center gap-1">
+                            <i data-lucide="sparkles" class="w-3 h-3"></i> AI Write
+                        </button>
                     </div>
                 </div>
                 <input id="topicInput" type="text" value="r/confessions" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-gray-900 focus:border-black outline-none shadow-sm" placeholder="Topic...">
                 <textarea id="scriptText" rows="6" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs focus:border-black outline-none text-gray-700 resize-none leading-relaxed shadow-sm" placeholder="Script content..."></textarea>
-                <div class="flex justify-between items-center px-1">
-                    <span class="text-[9px] text-gray-400" id="modelLabel">Model: Default</span>
-                </div>
-            </section>
-
-            <section class="space-y-3 relative">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
-                        <span class="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">2</span> MIXER
-                    </h2>
-                    <span id="lockBadge" class="text-[9px] font-bold bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full flex items-center gap-1"><i data-lucide="lock" class="w-2 h-2"></i> Locked</span>
-                </div>
-                
-                <div id="mixerContent" class="gated">
-                    <div class="bg-white border border-gray-200 rounded-xl p-3 space-y-3 shadow-sm mb-3">
-                         <div class="flex items-center justify-between">
-                             <div class="flex items-center gap-2">
-                                 <button onclick="loadPresetAudio()" class="w-7 h-7 rounded bg-emerald-500 text-white flex items-center justify-center"><i data-lucide="music" class="w-3.5 h-3.5"></i></button>
-                                 <span id="musicName" class="text-[10px] text-gray-400 font-mono truncate max-w-[120px]">No Music</span>
-                             </div>
-                             <label class="cursor-pointer text-[10px] font-bold text-gray-500 hover:text-black uppercase">Upload <input type="file" id="bgMusicInput" accept="audio/*" class="hidden" onchange="handleMusicUpload(this)"></label>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 pt-1">
-                            <div><div class="flex justify-between text-[9px] font-bold text-gray-400 uppercase mb-1"><span>Music</span><span id="volVal" class="text-gray-900">20%</span></div><input type="range" id="musicVol" min="0" max="1" step="0.05" value="0.2" class="w-full" oninput="document.getElementById('volVal').innerText=Math.round(this.value*100)+'%'"></div>
-                            <div><div class="flex justify-between text-[9px] font-bold text-gray-400 uppercase mb-1"><span>Speed</span><span id="speedVal" class="text-gray-900">1.0x</span></div><input type="range" id="voiceSpeed" min="0.8" max="1.5" step="0.1" value="1.0" class="w-full" oninput="document.getElementById('speedVal').innerText=this.value+'x'"></div>
-                        </div>
-                    </div>
-                    <button onclick="synthesizeAudio()" id="synthBtn" class="w-full bg-black text-white py-3 rounded-xl font-bold text-xs shadow-md hover:bg-gray-800 transition-all flex justify-center items-center gap-2"><i data-lucide="mic" class="w-3.5 h-3.5"></i> Generate Audio</button>
-                    <p class="text-[9px] text-gray-400 text-center mt-1" id="ttsProviderLabel">Provider: GEMINI</p>
-                </div>
             </section>
 
             <section class="space-y-3">
-                <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2"><span class="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">3</span> VISUALS</h2>
+                <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">2</span> MIXER
+                </h2>
+                
+                <div class="bg-white border border-gray-200 rounded-xl p-3 space-y-3 shadow-sm">
+                    <div class="flex items-center justify-between">
+                         <div class="flex items-center gap-2">
+                             <button onclick="loadPresetAudio()" class="w-7 h-7 rounded bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-all shadow-sm">
+                                <i data-lucide="music" class="w-3.5 h-3.5"></i>
+                             </button>
+                             <span id="musicName" class="text-[10px] text-gray-400 font-mono truncate max-w-[120px]">No Music</span>
+                         </div>
+                         <label class="cursor-pointer text-[10px] font-bold text-gray-500 hover:text-black transition-colors uppercase">
+                             Upload <input type="file" id="bgMusicInput" accept="audio/*" class="hidden" onchange="handleMusicUpload(this)">
+                         </label>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 pt-1">
+                        <div>
+                            <div class="flex justify-between text-[9px] font-bold text-gray-400 uppercase mb-1"><span>Music</span><span id="volVal" class="text-gray-900">20%</span></div>
+                            <input type="range" id="musicVol" min="0" max="1" step="0.05" value="0.2" class="w-full" oninput="document.getElementById('volVal').innerText = Math.round(this.value*100)+'%'">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[9px] font-bold text-gray-400 uppercase mb-1"><span>Speed</span><span id="speedVal" class="text-gray-900">1.0x</span></div>
+                            <input type="range" id="voiceSpeed" min="0.8" max="1.5" step="0.1" value="1.0" class="w-full" oninput="document.getElementById('speedVal').innerText = this.value+'x'">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="synthesizeAudio()" id="synthBtn" class="w-full bg-white border border-gray-200 hover:border-black hover:bg-gray-50 text-gray-900 py-3 rounded-xl font-bold text-xs transition-all flex justify-center items-center gap-2 active:scale-95 shadow-sm">
+                    <i data-lucide="mic" class="w-3.5 h-3.5"></i> Generate Audio
+                </button>
+                <p class="text-[9px] text-gray-400 text-center" id="ttsProviderLabel">Using: Default</p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">3</span> VISUALS
+                </h2>
                 <select id="bgMode" onchange="toggleBgMode()" class="w-full bg-white border border-gray-200 text-gray-900 text-[10px] font-bold rounded-lg px-2 py-2.5 outline-none focus:border-black shadow-sm cursor-pointer">
                     <option value="minecraft">Minecraft Gameplay</option>
                     <option value="upload">Custom Upload</option>
                     <option value="solid">Solid Black</option>
                 </select>
+                
                 <div id="uploadZone" class="hidden border border-dashed border-gray-300 rounded-xl p-3 text-center cursor-pointer hover:bg-gray-50 transition-all" onclick="document.getElementById('bgVideoInput').click()">
                      <input type="file" id="bgVideoInput" accept="video/*" class="hidden" onchange="handleVideoUpload(this.files[0])">
                      <span class="text-[9px] text-gray-500 font-bold uppercase">Click for .MP4</span>
                 </div>
+
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white border border-gray-200 rounded-lg p-2 flex items-center justify-between"><span class="text-[9px] font-bold text-gray-400 uppercase">Text</span><input type="color" id="textColor" value="#ffffff" class="w-6 h-6 rounded cursor-pointer border-0 p-0 overflow-hidden"></div>
-                    <div class="bg-white border border-gray-200 rounded-lg p-2 flex items-center justify-between"><span class="text-[9px] font-bold text-gray-400 uppercase">Highlight</span><input type="color" id="highlightColor" value="#fbbf24" class="w-6 h-6 rounded cursor-pointer border-0 p-0 overflow-hidden"></div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-2 flex items-center justify-between">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase">Text</span>
+                        <input type="color" id="textColor" value="#ffffff" class="w-6 h-6 rounded cursor-pointer border-0 p-0 overflow-hidden">
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-2 flex items-center justify-between">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase">Highlight</span>
+                        <input type="color" id="highlightColor" value="#fbbf24" class="w-6 h-6 rounded cursor-pointer border-0 p-0 overflow-hidden">
+                    </div>
                 </div>
-                <div class="pt-1 px-1"><label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Text Y-Axis</label><input type="range" id="textY" min="-300" max="300" value="0" class="w-full" oninput="renderPreview()"></div>
+                <div class="pt-1 px-1">
+                    <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Text Y-Axis</label>
+                    <input type="range" id="textY" min="-300" max="300" value="0" class="w-full" oninput="renderPreview()">
+                </div>
             </section>
         </div>
 
         <div class="p-5 border-t border-gray-200 bg-white grid grid-cols-2 gap-3 z-40 shrink-0">
-            <button onclick="togglePlay()" id="playBtn" class="bg-black text-white py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 hover:bg-gray-800 shadow-md"><i data-lucide="play" class="w-3.5 h-3.5"></i> PREVIEW</button>
-            <button onclick="saveProjectToCloud()" id="saveBtn" disabled class="bg-gray-100 text-gray-400 cursor-not-allowed py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2"><i data-lucide="cloud" class="w-3.5 h-3.5"></i> SAVE</button>
+            <button onclick="togglePlay()" id="playBtn" class="bg-black text-white py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 hover:bg-gray-800 shadow-md">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i> PREVIEW
+            </button>
+            <button onclick="saveProjectToCloud()" id="saveBtn" disabled class="bg-gray-100 text-gray-400 cursor-not-allowed py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2">
+                <i data-lucide="cloud" class="w-3.5 h-3.5"></i> SAVE
+            </button>
         </div>
     </div>
 
     <div class="flex-1 bg-gray-100 relative flex justify-center items-center p-4 md:p-8 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] overflow-hidden">
+        
         <div id="toast" class="fixed top-5 right-5 z-50 transition-all opacity-0 translate-x-4 bg-white border border-gray-100 shadow-xl px-4 py-3 rounded-lg font-bold text-xs flex items-center gap-2"></div>
+
         <div class="canvas-container shadow-2xl" id="canvasWrapper">
             <canvas id="mainCanvas" class="w-full h-full object-contain bg-black"></canvas>
             <video id="bgVideo" class="absolute top-0 left-0 w-px h-px opacity-0 pointer-events-none" loop muted playsinline></video>
@@ -122,61 +174,52 @@
     </div>
 
     <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm modal">
-        <div class="bg-white rounded-2xl w-[90%] max-w-[450px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        <div class="bg-white rounded-2xl w-[90%] max-w-[450px] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="font-bold text-sm text-gray-900 flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Settings</h3>
                 <button onclick="toggleSettings()" class="text-gray-400 hover:text-black"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
             
-            <div class="p-6 overflow-y-auto space-y-5">
-                <div class="bg-red-50 border border-red-100 p-3 rounded-xl flex justify-between items-center">
-                    <div><div class="text-[10px] font-bold text-red-500 uppercase">Dev Mode / Force Unlock</div><div class="text-[9px] text-red-400">Enable if you have keys but can't login.</div></div>
-                    <input type="checkbox" id="forceUnlock" onchange="toggleForceUnlock()" class="w-4 h-4 accent-red-500 cursor-pointer">
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Text Model</label>
-                    <select id="genProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-200 text-xs font-bold rounded-lg px-3 py-2 outline-none focus:border-black">
-                        <option value="puter">Puter AI (Free / Auto-Auth)</option>
-                        <option value="gemini">Google Gemini (Key)</option>
-                        <option value="groq">Groq (Key)</option>
-                        <option value="openai">OpenAI (Key)</option>
+            <div class="p-6 overflow-y-auto space-y-6">
+                
+                <div class="space-y-3">
+                    <label class="text-[10px] font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="cpu" class="w-3 h-3"></i> Text Generation
+                    </label>
+                    <select id="genProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-200 text-xs font-medium rounded-lg px-3 py-2 outline-none focus:border-black">
+                        <option value="puter">Puter AI (Free / No Key)</option>
+                        <option value="gemini">Google Gemini</option>
+                        <option value="groq">Groq (Llama 3/Mixtral)</option>
+                        <option value="openai">OpenAI (GPT-4/3.5)</option>
                     </select>
-
-                    <div id="puter-gen-options" class="hidden space-y-2 pt-1 bg-gray-50 p-2 rounded-lg">
-                        <label class="text-[9px] font-bold text-gray-400">Puter Model</label>
-                        <select id="puterModel" class="w-full bg-white border border-gray-200 text-xs rounded-lg px-3 py-2">
-                            <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
-                            <option value="gpt-4o">GPT-4o (Smart)</option>
-                            <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
-                            <option value="meta-llama/llama-3.1-70b-instruct">Llama 3.1 70B</option>
-                        </select>
-                    </div>
                     
-                    <input id="geminiKey" type="password" class="provider-key hidden w-full bg-gray-50 border border-gray-200 text-[10px] rounded-lg px-3 py-2 font-mono" placeholder="Gemini Key (e.g. AIza...)">
-                    <input id="groqKey" type="password" class="provider-key hidden w-full bg-gray-50 border border-gray-200 text-[10px] rounded-lg px-3 py-2 font-mono" placeholder="Groq Key (gsk_...)">
-                    <input id="openaiKey" type="password" class="provider-key hidden w-full bg-gray-50 border border-gray-200 text-[10px] rounded-lg px-3 py-2 font-mono" placeholder="OpenAI Key (sk-...)">
+                    <div id="key-gemini" class="provider-key hidden space-y-1">
+                        <input id="geminiKey" type="password" class="w-full bg-gray-50 border border-gray-200 text-[10px] rounded-lg px-3 py-2 outline-none font-mono" placeholder="Paste Gemini API Key">
+                    </div>
+                    <div id="key-groq" class="provider-key hidden space-y-1">
+                        <input id="groqKey" type="password" class="w-full bg-gray-50 border border-gray-200 text-[10px] rounded-lg px-3 py-2 outline-none font-mono" placeholder="Paste Groq API Key">
+                    </div>
+                    <div id="key-openai" class="provider-key hidden space-y-1">
+                        <input id="openaiKey" type="password" class="w-full bg-gray-50 border border-gray-200 text-[10px] rounded-lg px-3 py-2 outline-none font-mono" placeholder="Paste OpenAI API Key">
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Voice Engine</label>
-                    <select id="ttsProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-200 text-xs font-bold rounded-lg px-3 py-2 outline-none focus:border-black">
-                        <option value="gemini">Gemini TTS (Requires Key)</option>
+                <hr class="border-gray-100">
+
+                <div class="space-y-3">
+                    <label class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-2">
+                        <i data-lucide="mic" class="w-3 h-3"></i> Text to Speech
+                    </label>
+                    <select id="ttsProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-200 text-xs font-medium rounded-lg px-3 py-2 outline-none focus:border-black">
+                        <option value="gemini">Google Gemini (High Quality)</option>
                         <option value="puter">Puter TTS (Free)</option>
                     </select>
-
-                    <div id="puter-tts-options" class="hidden space-y-2 pt-1 bg-gray-50 p-2 rounded-lg">
-                        <label class="text-[9px] font-bold text-gray-400">Puter TTS Provider</label>
-                        <select id="puterTTSProvider" class="w-full bg-white border border-gray-200 text-xs rounded-lg px-3 py-2">
-                            <option value="openai">OpenAI (Alloy, Echo, Shimmer)</option>
-                            <option value="aws-polly">AWS Polly (Standard)</option>
-                        </select>
-                    </div>
+                    <p class="text-[9px] text-gray-400" id="ttsNote">Requires Gemini Key defined in Generation section if Gemini is selected.</p>
                 </div>
             </div>
 
             <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
-                <button onclick="saveSettings()" class="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-gray-800 transition-all">Save & Close</button>
+                <button onclick="saveSettings()" class="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-gray-800 transition-all">Save Changes</button>
             </div>
         </div>
     </div>
@@ -194,17 +237,14 @@
             startTime: 0,
             animationId: null,
             sourceNodes: [],
-            user: null, 
+            user: null, // Puter User
             guestDuration: 0,
-            isUnlocked: false
         };
 
+        // Default Settings
         let SETTINGS = {
             genProvider: 'puter',
-            puterModel: 'gpt-4o-mini',
             ttsProvider: 'gemini',
-            puterTTSProvider: 'openai',
-            forceUnlock: false,
             keys: { gemini: '', groq: '', openai: '' }
         };
 
@@ -217,15 +257,15 @@
             lucide.createIcons();
             canvas.width = CONFIG.width; canvas.height = CONFIG.height;
             loadSettingsLocal();
+            updateSettingsUI();
             
-            // Try Auto-Login
+            // Check Puter Session
             if (window.puter) {
                 try {
                     const resp = await puter.auth.getUser();
                     if (resp.user) handleLoginSuccess(resp.user);
-                } catch (e) { console.log("Guest Mode Active"); }
+                } catch (e) { console.log("Guest Mode"); }
             }
-            if(SETTINGS.forceUnlock) toggleForceUnlock(true);
 
             document.body.addEventListener('click', initAudio, { once: true });
             video.src = 'minecraft.mp4';
@@ -238,125 +278,85 @@
             if (STATE.audioCtx.state === 'suspended') STATE.audioCtx.resume();
         }
 
-        // --- AUTH ---
-        async function loginPuter() {
-            const btn = document.querySelector('#authContainer button');
-            const original = btn.innerHTML;
-            btn.innerText = "Signing in...";
-            try {
-                const user = await puter.auth.signIn();
-                handleLoginSuccess(user);
-            } catch (e) {
-                showToast("Login Failed. Try 'Dev Mode'", 'error');
-            }
-            btn.innerHTML = original;
-        }
-
-        function handleLoginSuccess(user) {
-            STATE.user = user;
-            STATE.isUnlocked = true;
-            document.getElementById('authContainer').innerHTML = `<span class="text-[10px] font-bold text-gray-500 mr-2">${user.username}</span>`;
-            unlockUI();
-            loadProjectFromCloud();
-        }
-
-        function toggleForceUnlock(forceVal) {
-            const checkbox = document.getElementById('forceUnlock');
-            if(forceVal !== undefined) checkbox.checked = forceVal;
-            STATE.isUnlocked = checkbox.checked;
-            if(STATE.isUnlocked) { unlockUI(); showToast("Dev Mode: Unlocked", 'success'); } 
-            else if (!STATE.user) { lockUI(); }
-        }
-
-        function unlockUI() {
-            document.getElementById('mixerContent').classList.remove('gated');
-            document.getElementById('lockBadge').classList.add('hidden');
-            const saveBtn = document.getElementById('saveBtn');
-            if(STATE.user) { saveBtn.disabled = false; saveBtn.classList.replace('bg-gray-100','bg-emerald-600'); saveBtn.classList.replace('text-gray-400','text-white'); saveBtn.classList.remove('cursor-not-allowed'); }
-        }
-
-        function lockUI() {
-            document.getElementById('mixerContent').classList.add('gated');
-            document.getElementById('lockBadge').classList.remove('hidden');
-        }
-
-        // --- SETTINGS ---
+        // --- AUTH & SETTINGS LOGIC ---
         function toggleSettings() {
-            document.getElementById('settingsModal').classList.toggle('open');
-            updateSettingsUI();
+            const modal = document.getElementById('settingsModal');
+            modal.classList.toggle('open');
         }
 
         function updateSettingsUI() {
             const gen = document.getElementById('genProvider').value;
-            const tts = document.getElementById('ttsProvider').value;
-            
+            // Hide all keys first
             document.querySelectorAll('.provider-key').forEach(el => el.classList.add('hidden'));
-            document.getElementById('puter-gen-options').classList.add('hidden');
-            document.getElementById('puter-tts-options').classList.add('hidden');
+            
+            // Show relevant key input
+            if(gen === 'gemini') document.getElementById('key-gemini').classList.remove('hidden');
+            if(gen === 'groq') document.getElementById('key-groq').classList.remove('hidden');
+            if(gen === 'openai') document.getElementById('key-openai').classList.remove('hidden');
 
-            if(gen === 'puter') document.getElementById('puter-gen-options').classList.remove('hidden');
-            if(gen === 'gemini') document.getElementById('geminiKey').classList.remove('hidden');
-            if(gen === 'groq') document.getElementById('groqKey').classList.remove('hidden');
-            if(gen === 'openai') document.getElementById('openaiKey').classList.remove('hidden');
-
-            if(tts === 'puter') document.getElementById('puter-tts-options').classList.remove('hidden');
-
-            document.getElementById('modelLabel').innerText = `Model: ${gen.toUpperCase()} ${gen==='puter'?SETTINGS.puterModel:''}`;
-            document.getElementById('ttsProviderLabel').innerText = `Voice: ${tts.toUpperCase()}`;
+            // Update TTS label on main UI
+            document.getElementById('ttsProviderLabel').innerText = `Provider: ${document.getElementById('ttsProvider').value.toUpperCase()}`;
         }
 
         function saveSettings() {
             SETTINGS.genProvider = document.getElementById('genProvider').value;
-            SETTINGS.puterModel = document.getElementById('puterModel').value;
             SETTINGS.ttsProvider = document.getElementById('ttsProvider').value;
-            SETTINGS.puterTTSProvider = document.getElementById('puterTTSProvider').value;
             SETTINGS.keys.gemini = document.getElementById('geminiKey').value;
             SETTINGS.keys.groq = document.getElementById('groqKey').value;
             SETTINGS.keys.openai = document.getElementById('openaiKey').value;
-            SETTINGS.forceUnlock = document.getElementById('forceUnlock').checked;
-
-            localStorage.setItem('dingle_settings_v5', JSON.stringify(SETTINGS));
+            
+            localStorage.setItem('dingle_settings_v3', JSON.stringify(SETTINGS));
             showToast("Settings Saved", 'success');
             toggleSettings();
-            if(SETTINGS.forceUnlock) toggleForceUnlock(true);
-            updateSettingsUI(); // Update main UI labels
+            updateSettingsUI();
         }
 
         function loadSettingsLocal() {
-            const raw = localStorage.getItem('dingle_settings_v5');
+            const raw = localStorage.getItem('dingle_settings_v3');
             if(raw) {
                 SETTINGS = JSON.parse(raw);
-                document.getElementById('genProvider').value = SETTINGS.genProvider || 'puter';
-                document.getElementById('puterModel').value = SETTINGS.puterModel || 'gpt-4o-mini';
-                document.getElementById('ttsProvider').value = SETTINGS.ttsProvider || 'gemini';
-                document.getElementById('puterTTSProvider').value = SETTINGS.puterTTSProvider || 'openai';
+                document.getElementById('genProvider').value = SETTINGS.genProvider;
+                document.getElementById('ttsProvider').value = SETTINGS.ttsProvider;
                 document.getElementById('geminiKey').value = SETTINGS.keys.gemini || '';
                 document.getElementById('groqKey').value = SETTINGS.keys.groq || '';
                 document.getElementById('openaiKey').value = SETTINGS.keys.openai || '';
-                document.getElementById('forceUnlock').checked = SETTINGS.forceUnlock || false;
             }
         }
 
-        // --- AI LOGIC ---
+        async function loginPuter() {
+            try { const user = await puter.auth.signIn(); handleLoginSuccess(user); } catch (e) { showToast("Login Failed", 'error'); }
+        }
+        function handleLoginSuccess(user) {
+            STATE.user = user;
+            document.getElementById('authContainer').innerHTML = `<span class="text-[10px] font-bold text-gray-500 mr-2">${user.username}</span>`;
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = false; saveBtn.classList.replace('bg-gray-100','bg-emerald-600'); saveBtn.classList.replace('text-gray-400','text-white'); saveBtn.classList.remove('cursor-not-allowed');
+            loadProjectFromCloud();
+        }
+
+        // --- AI ROUTER ---
         async function generateAIScript() {
             const btn = document.getElementById('aiBtn');
             btn.innerHTML = '...'; btn.disabled = true;
             const topic = document.getElementById('topicInput').value;
-            const prompt = `Write a viral short script about: ${topic}. Style: Reddit Story. Max 100 words. Hook first sentence. No bolding.`;
+            const prompt = `Write a viral short script about: ${topic}. Style: Reddit Story. Max 100 words. Hook first sentence. Do not include 'Here is a script' or bolding.`;
             
             try {
                 let text = "";
                 const p = SETTINGS.genProvider;
 
                 if (p === 'puter') {
-                    // Puter.js v2 chat
-                    text = await puter.ai.chat(prompt, { model: SETTINGS.puterModel });
-                    if(typeof text === 'object') text = text.message?.content || text.text; 
+                    if(!STATE.user) { 
+                        // Try guest puter, sometimes works, otherwise ask login
+                         try { text = await puter.ai.chat(prompt); } 
+                         catch(e){ throw new Error("Login required for Puter AI"); }
+                    } else {
+                        text = await puter.ai.chat(prompt);
+                    }
                 } 
                 else if (p === 'gemini') {
                     if(!SETTINGS.keys.gemini) throw new Error("Missing Gemini Key");
-                    // Using Gemini 2.0 Flash
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${SETTINGS.keys.gemini}`, {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${SETTINGS.keys.gemini}`, {
                         method: 'POST', headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                     });
@@ -365,46 +365,45 @@
                 }
                 else if (p === 'groq') {
                     if(!SETTINGS.keys.groq) throw new Error("Missing Groq Key");
-                    // Using Llama 3.3 70B Versatile
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${SETTINGS.keys.groq}`},
-                        body: JSON.stringify({ messages: [{role: 'user', content: prompt}], model: 'llama-3.3-70b-versatile' })
+                        body: JSON.stringify({ messages: [{role: 'user', content: prompt}], model: 'llama3-8b-8192' })
                     });
                     const data = await res.json();
                     text = data.choices[0].message.content;
                 }
                 else if (p === 'openai') {
                     if(!SETTINGS.keys.openai) throw new Error("Missing OpenAI Key");
-                    // Using GPT-4o-mini
                     const res = await fetch('https://api.openai.com/v1/chat/completions', {
                         method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${SETTINGS.keys.openai}`},
-                        body: JSON.stringify({ messages: [{role: 'user', content: prompt}], model: 'gpt-4o-mini' })
+                        body: JSON.stringify({ messages: [{role: 'user', content: prompt}], model: 'gpt-3.5-turbo' })
                     });
                     const data = await res.json();
                     text = data.choices[0].message.content;
                 }
 
                 document.getElementById('scriptText').value = text;
-                showToast("Script Generated", 'success');
-            } catch(e) { showToast("AI Error: " + e.message, 'error'); }
+                showToast(`Generated via ${p.toUpperCase()}`, 'success');
+            } catch(e) { showToast(e.message, 'error'); }
             btn.innerHTML = '<i data-lucide="sparkles" class="w-3 h-3"></i> AI Write'; btn.disabled = false;
         }
 
         async function synthesizeAudio() {
-            if(!STATE.isUnlocked) return showToast("Unlock UI First", 'error');
             const text = document.getElementById('scriptText').value;
-            if(!text) return showToast("No Text", 'error');
+            if(!text) return showToast("No Script Text", 'error');
 
             const btn = document.getElementById('synthBtn');
             const original = btn.innerHTML;
             btn.innerHTML = 'Synthesizing...'; btn.disabled = true;
             
+            const p = SETTINGS.ttsProvider;
+
             try {
-                let buffer;
-                if(SETTINGS.ttsProvider === 'gemini') {
-                     if(!SETTINGS.keys.gemini) throw new Error("Gemini Key Required");
-                     // Gemini TTS (Puck/Kore logic)
-                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${SETTINGS.keys.gemini}`, {
+                let buffer = null;
+
+                if (p === 'gemini') {
+                    if(!SETTINGS.keys.gemini) throw new Error("Gemini Key required for TTS");
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${SETTINGS.keys.gemini}`, {
                         method: 'POST', headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ 
                             contents: [{ parts: [{ text: text }] }], 
@@ -413,18 +412,17 @@
                     });
                     const data = await res.json();
                     if(data.error) throw new Error(data.error.message);
-                    const bin = atob(data.candidates[0].content.parts[0].inlineData.data);
-                    const bytes = new Uint8Array(bin.length);
-                    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                    const binaryString = atob(data.candidates[0].content.parts[0].inlineData.data);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
                     initAudio();
                     buffer = await STATE.audioCtx.decodeAudioData(bytes.buffer);
-                } else {
-                    // Puter TTS (OpenAI or Polly)
-                    const provider = SETTINGS.puterTTSProvider;
-                    // For OpenAI via Puter we can ask for specific voices, but here we just use default 'alloy' or let Puter handle it
-                    const voice = provider === 'openai' ? 'alloy' : 'Joanna'; 
-                    const audio = await puter.ai.txt2speech(text, { provider: provider, voice: voice });
-                    
+                } 
+                else if (p === 'puter') {
+                    // Puter TTS
+                    const audio = await puter.ai.txt2speech(text);
+                    // Puter returns an Audio object. We need the buffer.
+                    // Hack: fetch the src of the audio object
                     const res = await fetch(audio.src);
                     const arr = await res.arrayBuffer();
                     initAudio();
@@ -432,7 +430,8 @@
                 }
 
                 STATE.ttsBuffer = buffer;
-                // Density Calc
+                
+                // Timing Calc
                 const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
                 const totalDur = STATE.ttsBuffer.duration;
                 let charCount = text.length;
@@ -447,51 +446,91 @@
                         currentTime += wordDur;
                     });
                 });
-                showToast("Audio Ready", 'success');
+                showToast(`Audio Ready (${p.toUpperCase()})`, 'success');
+
             } catch(e) { showToast("TTS Error: " + e.message, 'error'); }
             btn.innerHTML = original; btn.disabled = false;
         }
 
         // --- STANDARD FEATURES ---
-        async function fetchReddit() {
+        async function fetchReddit() { /* (Same as before) */ 
              const btn = document.querySelector('button[onclick="fetchReddit()"]'); const original = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true;
              try { const sub = ['confessions', 'tifu'][Math.floor(Math.random()*2)]; const res = await fetch(`https://www.reddit.com/r/${sub}/top.json?limit=10&t=day`); const json = await res.json();
              const post = json.data.children.filter(p => p.data.selftext.length > 50)[0]?.data; if(post){ document.getElementById('topicInput').value = `r/${sub}`; document.getElementById('scriptText').value = post.selftext; showToast('Fetched', 'success'); }
              } catch(e){ showToast('Error', 'error'); } btn.innerHTML = original; btn.disabled = false;
         }
-        function togglePlay(){ STATE.isPlaying ? stop() : play(); }
+        
+        async function saveProjectToCloud() {
+            if(!STATE.user) return;
+            try {
+                // Save settings in cloud too if they want? Nah just project data
+                const projectData = {
+                    script: document.getElementById('scriptText').value,
+                    topic: document.getElementById('topicInput').value,
+                    // ... other fields
+                };
+                await puter.kv.set('dingle_proj_v3', JSON.stringify(projectData));
+                showToast("Saved to Cloud", 'success');
+            } catch(e) { showToast("Save Failed", 'error'); }
+        }
+
+        async function loadProjectFromCloud() {
+            try { const raw = await puter.kv.get('dingle_proj_v3'); if(raw) { const data = JSON.parse(raw); if(data.script) document.getElementById('scriptText').value = data.script; showToast("Loaded", 'success'); }} catch(e){}
+        }
+
+        // --- PLAYBACK (Standard) ---
+        function togglePlay() { STATE.isPlaying ? stop() : play(); }
         function play() {
-            initAudio(); STATE.sourceNodes=[]; STATE.startTime=STATE.audioCtx.currentTime;
-            if(STATE.ttsBuffer) { const n=STATE.audioCtx.createBufferSource(); n.buffer=STATE.ttsBuffer; n.playbackRate.value=document.getElementById('voiceSpeed').value; n.connect(STATE.audioCtx.destination); n.start(0); n.onended=()=>{if(STATE.isPlaying)stop()}; STATE.sourceNodes.push(n); }
-            else { const t=document.getElementById('scriptText').value; if(!t)return showToast("No Script",'error'); const w=t.split(/\s+/); STATE.words=w.map((x,i)=>({word:x,start:i*0.4,end:(i*0.4)+0.4})); STATE.guestDuration=w.length*0.4; showToast("Visual Preview",'success'); }
-            if(STATE.bgBuffer){ const n=STATE.audioCtx.createBufferSource(); n.buffer=STATE.bgBuffer; n.loop=true; const g=STATE.audioCtx.createGain(); g.gain.value=document.getElementById('musicVol').value; n.connect(g).connect(STATE.audioCtx.destination); n.start(0); STATE.sourceNodes.push(n); }
+            initAudio(); STATE.sourceNodes = []; STATE.startTime = STATE.audioCtx.currentTime;
+            if(STATE.ttsBuffer) {
+                const n = STATE.audioCtx.createBufferSource(); n.buffer = STATE.ttsBuffer; n.playbackRate.value = parseFloat(document.getElementById('voiceSpeed').value); n.connect(STATE.audioCtx.destination); n.start(0); n.onended = ()=>{if(STATE.isPlaying)stop()}; STATE.sourceNodes.push(n);
+            } else {
+                const text = document.getElementById('scriptText').value;
+                if(!text) return showToast("No Script", 'error');
+                const words = text.split(/\s+/);
+                STATE.words = words.map((w,i)=>({word:w, start:i*0.4, end:(i*0.4)+0.4}));
+                STATE.guestDuration = words.length*0.4;
+                showToast("Visual Preview", 'success');
+            }
+            if(STATE.bgBuffer) { const n = STATE.audioCtx.createBufferSource(); n.buffer=STATE.bgBuffer; n.loop=true; const g=STATE.audioCtx.createGain(); g.gain.value=document.getElementById('musicVol').value; n.connect(g).connect(STATE.audioCtx.destination); n.start(0); STATE.sourceNodes.push(n); }
             video.currentTime=0; video.play(); STATE.isPlaying=true; document.getElementById('playBtn').innerHTML='<i data-lucide="square" class="w-3 h-3"></i> STOP'; animate();
         }
-        function stop(){ STATE.sourceNodes.forEach(n=>{try{n.stop()}catch(e){}}); video.pause(); STATE.isPlaying=false; cancelAnimationFrame(STATE.animationId); document.getElementById('playBtn').innerHTML='<i data-lucide="play" class="w-3 h-3"></i> PREVIEW'; renderPreview(); }
-        function animate(){ if(!STATE.isPlaying)return; const speed=STATE.ttsBuffer?document.getElementById('voiceSpeed').value:1.0; const elapsed=(STATE.audioCtx.currentTime-STATE.startTime)*speed; if(!STATE.ttsBuffer&&elapsed>STATE.guestDuration){stop();return;} drawFrame(elapsed); STATE.animationId=requestAnimationFrame(animate); }
+        function stop() { STATE.sourceNodes.forEach(n=>{try{n.stop()}catch(e){}}); video.pause(); STATE.isPlaying=false; cancelAnimationFrame(STATE.animationId); document.getElementById('playBtn').innerHTML='<i data-lucide="play" class="w-3 h-3"></i> PREVIEW'; renderPreview(); }
+        function animate() {
+            if(!STATE.isPlaying) return;
+            const speed = STATE.ttsBuffer ? parseFloat(document.getElementById('voiceSpeed').value) : 1.0;
+            const elapsed = (STATE.audioCtx.currentTime - STATE.startTime)*speed;
+            if(!STATE.ttsBuffer && elapsed > STATE.guestDuration) { stop(); return; }
+            drawFrame(elapsed);
+            STATE.animationId = requestAnimationFrame(animate);
+        }
         function drawFrame(time) {
+            // ... (Same drawing logic as previous versions) ...
             if(document.getElementById('bgMode').value !== 'solid') {
                 const aspect = video.videoWidth/video.videoHeight; const cAspect = canvas.width/canvas.height;
                 let dw,dh,dx,dy; if(aspect>cAspect){dh=canvas.height; dw=dh*aspect; dx=(canvas.width-dw)/2; dy=0;}else{dw=canvas.width; dh=dw/aspect; dx=0; dy=(canvas.height-dh)/2;}
                 ctx.drawImage(video,dx,dy,dw,dh);
             } else { ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height); }
             ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            
             const active = STATE.words.find(w=>time>=w.start && time<w.end) || STATE.words[STATE.words.length-1];
-            if(active && time < (STATE.ttsBuffer?STATE.ttsBuffer.duration:STATE.guestDuration)+0.5) {
-                ctx.font = '900 70px "Montserrat"'; ctx.textAlign='center'; const y = canvas.height/2 + parseInt(document.getElementById('textY').value);
+            const max = STATE.ttsBuffer ? STATE.ttsBuffer.duration : STATE.guestDuration;
+            if(active && time < max+0.5) {
+                ctx.font = '900 70px "Montserrat"'; ctx.textAlign='center';
+                const y = canvas.height/2 + parseInt(document.getElementById('textY').value);
                 const w = active.word.toUpperCase().replace(/[^A-Z0-9]/g,'');
                 ctx.lineJoin='round'; ctx.lineWidth=15; ctx.strokeStyle='black'; ctx.strokeText(w,canvas.width/2,y);
                 ctx.fillStyle=document.getElementById('textColor').value; ctx.fillText(w,canvas.width/2,y);
             }
         }
-        function renderPreview(){ if(!STATE.isPlaying){ ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.font='900 80px "Montserrat"'; ctx.fillStyle='#333'; ctx.textAlign='center'; ctx.fillText("PREVIEW",canvas.width/2,canvas.height/2); }}
+        function renderPreview() { if(!STATE.isPlaying){ ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.font='900 80px "Montserrat"'; ctx.fillStyle='#333'; ctx.textAlign='center'; ctx.fillText("PREVIEW",canvas.width/2,canvas.height/2); } }
+
+        // --- UTILS ---
         function handleMusicUpload(el) { if(el.files[0]){const r=new FileReader(); r.onload=async e=>{initAudio(); STATE.bgBuffer=await STATE.audioCtx.decodeAudioData(e.target.result); document.getElementById('musicName').innerText=el.files[0].name;}; r.readAsArrayBuffer(el.files[0]);}}
         function handleVideoUpload(f) { if(f) video.src=URL.createObjectURL(f); }
-        function loadPresetAudio() { /*...*/}
+        function loadPresetAudio() { /* ... */ }
         function toggleBgMode() { if(document.getElementById('bgMode').value==='minecraft') video.src='minecraft.mp4'; renderPreview(); }
         function showToast(msg, type) { const t=document.getElementById('toast'); t.innerText=msg; t.style.opacity=1; t.style.transform='translateX(0)'; t.style.color=type==='error'?'red':'green'; setTimeout(()=>{t.style.opacity=0; t.style.transform='translateX(20px)'},3000); }
-        async function saveProjectToCloud() { if(!STATE.user)return showToast("Login to save",'error'); try{await puter.kv.set('dingle_proj',JSON.stringify({script:document.getElementById('scriptText').value}));showToast("Saved",'success');}catch(e){showToast("Error",'error');}}
-        async function loadProjectFromCloud() { try{const r=await puter.kv.get('dingle_proj');if(r){document.getElementById('scriptText').value=JSON.parse(r).script;showToast("Loaded",'success');}}catch(e){} }
     </script>
 </body>
 </html>
