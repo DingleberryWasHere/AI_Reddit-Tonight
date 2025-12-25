@@ -3,658 +3,558 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dingle Studio | SaaS Enterprise</title>
+    <title>Dingle AI | Studio (Puter Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://js.puter.com/v2/"></script>
+
     <style>
-        :root { --accent: #2563eb; --bg: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #0f172a; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #111827; overflow: hidden; }
         
-        /* Premium Gradients */
-        .bg-gradient-pro { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
-        .text-gradient-pro { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* UI Tweaks */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .canvas-container {
-            height: 85vh; aspect-ratio: 9/16; 
-            background: #000; border-radius: 12px;
-            box-shadow: 0 35px 60px -15px rgba(0,0,0,0.3);
-            position: relative; overflow: hidden; border: 4px solid #fff;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Sliders */
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #000; margin-top: -6px; cursor: pointer;
+            box-shadow: 0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e5e7eb; border-radius: 2px;
         }
 
-        .loader { width: 16px; height: 16px; border: 2px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.6s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Canvas */
+        .canvas-container {
+            height: 90vh; aspect-ratio: 9/16; max-width: 100%; position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background: #000; border-radius: 12px; overflow: hidden; border: 4px solid #fff;
+        }
+        .loader { border: 2px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 2px solid #000; width: 16px; height: 16px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Locked Item */
-        .locked-option { opacity: 0.6; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, #f1f5f9 10px, #f1f5f9 20px); }
+        /* Gated Content Blur */
+        .gated-content { filter: blur(4px); pointer-events: none; user-select: none; opacity: 0.5; }
+        .lock-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; background: rgba(255,255,255,0.6); backdrop-filter: blur(2px); }
     </style>
 </head>
-<body class="h-screen w-screen flex">
+<body class="h-screen w-screen flex flex-col md:flex-row">
 
-    <div class="w-[440px] h-full bg-white border-r border-gray-200 flex flex-col z-20 shrink-0 shadow-xl">
+    <div class="w-full md:w-[420px] flex flex-col border-r border-gray-200 bg-white z-30 shrink-0 h-full shadow-sm">
         
-        <div class="p-6 border-b border-gray-100 bg-white">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <h1 class="font-black text-xl tracking-tight flex items-center gap-2">
-                        <div class="w-7 h-7 bg-black text-white rounded-lg flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4"></i></div>
-                        Dingle<span class="text-gray-400 font-medium">SaaS</span>
-                    </h1>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span id="planBadge" class="text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded uppercase tracking-wider">Free Plan</span>
-                        <span class="text-[10px] text-gray-300">•</span>
-                        <span id="creditReset" class="text-[10px] text-gray-400">Resets in 7d</span>
-                    </div>
-                </div>
-                <button onclick="openProModal()" class="bg-gradient-pro text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg shadow-indigo-500/20 hover:scale-105 transition-transform flex items-center gap-1">
-                    <i data-lucide="crown" class="w-3 h-3"></i> UPGRADE
+        <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
+            <h1 class="text-lg font-bold tracking-tight text-gray-900 flex items-center gap-2">
+                <div class="bg-black text-white p-1.5 rounded-lg"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                Dingle<span class="text-gray-400">AI</span>
+            </h1>
+            <div id="authSection">
+                <button onclick="loginPuter()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all shadow-sm flex items-center gap-2">
+                    <i data-lucide="log-in" class="w-3 h-3"></i> Sign In
                 </button>
-            </div>
-
-            <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                <div class="flex justify-between text-[10px] font-bold text-gray-500 mb-1.5 uppercase">
-                    <span>Weekly Quota</span>
-                    <span id="quotaText">0 / 5 Videos</span>
-                </div>
-                <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div id="quotaBar" class="h-full bg-black w-0 transition-all duration-500"></div>
-                </div>
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto no-scrollbar p-6 relative space-y-8">
-            
-            <section class="space-y-3">
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 relative">
+
+            <div id="settingsPanel" class="space-y-3">
                 <div class="flex justify-between items-center">
-                    <label class="text-[11px] font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                        <span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-[10px]">1</span> Content
-                    </label>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Settings</label>
+                    <span id="userStatus" class="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Guest Mode</span>
+                </div>
+                <p class="text-[10px] text-gray-400 leading-snug">
+                    Sign in to use AI generation and save projects.
+                 </p>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <section class="space-y-3 relative group">
+                <div id="scriptLock" class="lock-overlay hidden">
+                    <i data-lucide="lock" class="w-6 h-6 text-gray-400 mb-2"></i>
+                    <span class="text-xs font-bold text-gray-500">Sign in to use AI</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">1</span> SCRIPT
+                    </h2>
                     <div class="flex gap-2">
-                        <button onclick="fetchReddit()" class="bg-orange-50 text-orange-600 border border-orange-100 hover:bg-orange-100 px-2.5 py-1 rounded text-[10px] font-bold flex items-center gap-1 transition-colors">
-                            <i data-lucide="flame" class="w-3 h-3"></i> Viral
-                        </button>
-                        <button onclick="generateAI()" class="bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 px-2.5 py-1 rounded text-[10px] font-bold flex items-center gap-1 transition-colors">
+                        <button onclick="generatePuterScript()" class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white border border-transparent hover:shadow-md px-3 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1">
                             <i data-lucide="sparkles" class="w-3 h-3"></i> AI Write
                         </button>
                     </div>
                 </div>
-                <input id="topicInput" type="text" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-xs font-bold focus:border-black outline-none transition-all" placeholder="Video Title...">
-                <textarea id="scriptText" rows="4" class="w-full bg-white border border-gray-200 rounded-xl p-4 text-xs focus:border-black outline-none resize-none leading-relaxed transition-all" placeholder="Enter script here..."></textarea>
+                <input id="topicInput" type="text" value="r/confessions" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs text-gray-900 focus:border-black outline-none shadow-sm" placeholder="Topic...">
+                <textarea id="scriptText" rows="5" class="w-full bg-white border border-gray-200 rounded-xl p-4 text-xs focus:border-black outline-none text-gray-700 resize-none leading-relaxed shadow-sm" placeholder="Text content..."></textarea>
             </section>
 
-            <section class="space-y-4">
-                <label class="text-[11px] font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-[10px]">2</span> Voice Engine
-                </label>
-
-                <div class="relative">
-                    <select id="apiProvider" onchange="handleApiChange()" class="w-full bg-white border border-gray-200 text-gray-900 text-xs font-bold rounded-xl px-4 py-3 appearance-none outline-none focus:border-black cursor-pointer">
-                        <optgroup label="Free Tier (Included)">
-                            <option value="browser">Browser Native (Offline) - Free</option>
-                            <option value="gemini">Google Gemini (BYOK) - Free</option>
-                        </optgroup>
-                        <optgroup label="PRO Tier (Subscription Required)" class="text-indigo-600 font-bold">
-                            <option value="elevenlabs">ElevenLabs (Ultra Realistic)</option>
-                            <option value="openai">OpenAI TTS-1 (High Quality)</option>
-                            <option value="azure">Azure Cognitive Speech</option>
-                            <option value="playht">Play.ht (Cloning)</option>
-                            <option value="cartesia">Cartesia Sonic (Fastest)</option>
-                            <option value="deepgram">Deepgram Aura</option>
-                            <option value="aws">Amazon Polly</option>
-                            <option value="google">Google Cloud TTS</option>
-                            <option value="lmnt">LMNT</option>
-                            <option value="murf">Murf.ai</option>
-                            <option value="lovo">LOVO Genny</option>
-                            <option value="speechify">Speechify</option>
-                            <option value="unreal">Unreal Speech</option>
-                            <option value="ibm">IBM Watson</option>
-                            <option value="resemble">Resemble AI</option>
-                        </optgroup>
-                    </select>
-                    <i data-lucide="chevron-down" class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+            <section class="space-y-3 relative">
+                 <div id="ttsLock" class="lock-overlay hidden">
+                    <i data-lucide="mic-off" class="w-6 h-6 text-gray-400 mb-2"></i>
+                    <span class="text-xs font-bold text-gray-500">Sign in for Voice</span>
                 </div>
 
-                <div id="voiceOptions" class="grid grid-cols-2 gap-2">
-                    <button onclick="selectVoice('Male')" id="v-Male" class="voice-btn bg-black text-white py-2.5 rounded-lg text-xs font-bold shadow-md transition-all">Male Voice</button>
-                    <button onclick="selectVoice('Female')" id="v-Female" class="voice-btn bg-white border border-gray-200 text-gray-500 py-2.5 rounded-lg text-xs font-bold hover:bg-gray-50 transition-all">Female Voice</button>
+                <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">2</span> MIXER
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-3 mb-2">
+                    <button onclick="selectVoice('Puck')" id="voice-Puck" class="voice-btn bg-black text-white border border-transparent rounded-xl py-2.5 text-xs font-bold shadow-md">Puck (M)</button>
+                    <button onclick="selectVoice('Kore')" id="voice-Kore" class="voice-btn bg-white text-gray-500 border border-gray-200 rounded-xl py-2.5 text-xs font-bold hover:border-gray-400">Kore (F)</button>
                 </div>
 
-                <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400"><i data-lucide="music" class="w-4 h-4"></i></div>
-                    <select id="musicSelect" onchange="handleMusicSelect()" class="bg-transparent text-xs font-bold text-gray-600 outline-none w-full cursor-pointer">
-                        <option value="none">No Background Music</option>
-                        <option value="lofi">Preset: Lo-Fi Chill</option>
-                        <option value="phonk">Preset: Drift Phonk</option>
-                        <option value="upload">Upload Custom...</option>
-                    </select>
-                    <input type="file" id="bgMusicInput" class="hidden" accept="audio/*" onchange="handleMusicUpload(this)">
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
+                     <div class="flex justify-between items-center">
+                         <div class="flex items-center gap-3">
+                             <button onclick="loadPresetAudio()" class="w-8 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-all shadow-sm" title="Load Preset">
+                                <i data-lucide="music" class="w-4 h-4"></i>
+                             </button>
+                             <label class="cursor-pointer flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-black transition-colors">
+                                 <i data-lucide="upload" class="w-3 h-3"></i> Upload
+                                 <input type="file" id="bgMusicInput" accept="audio/*" class="hidden" onchange="handleMusicUpload(this)">
+                             </label>
+                         </div>
+                         <span id="musicName" class="text-[10px] text-gray-400 font-mono truncate max-w-[100px]">No Music</span>
+                    </div>
+                    
+                    <div class="space-y-3 pt-2 border-t border-gray-200">
+                        <div>
+                            <div class="flex justify-between text-[10px] font-bold text-gray-400 uppercase mb-1"><span>Music Vol</span><span id="volVal" class="text-gray-900">20%</span></div>
+                            <input type="range" id="musicVol" min="0" max="1" step="0.05" value="0.2" class="w-full" oninput="document.getElementById('volVal').innerText = Math.round(this.value*100)+'%'">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] font-bold text-gray-400 uppercase mb-1"><span>Voice Speed</span><span id="speedVal" class="text-gray-900">1.0x</span></div>
+                            <input type="range" id="voiceSpeed" min="0.8" max="1.5" step="0.1" value="1.0" class="w-full" oninput="document.getElementById('speedVal').innerText = this.value+'x'">
+                        </div>
+                    </div>
                 </div>
 
-                <button onclick="generateAudio()" id="synthBtn" class="w-full bg-white border-2 border-gray-200 hover:border-black text-gray-900 py-3.5 rounded-xl font-black text-xs transition-all flex justify-center items-center gap-2 shadow-sm active:scale-[0.98]">
-                    GENERATE AUDIO
+                <div id="keyInputZone" class="hidden space-y-2">
+                     <input id="apiKey" type="password" class="w-full bg-white border border-gray-200 text-gray-800 text-[10px] rounded-lg px-3 py-2 outline-none" placeholder="Gemini API Key (Required for TTS)">
+                </div>
+
+                <button onclick="synthesizeAudio()" id="synthBtn" class="w-full bg-white border-2 border-gray-100 hover:border-black text-gray-900 py-3 rounded-xl font-bold text-xs transition-all flex justify-center items-center gap-2 active:scale-95">
+                    Generate Audio
                 </button>
             </section>
 
-            <section class="space-y-4">
-                <label class="text-[11px] font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-[10px]">3</span> Visuals
-                </label>
-                <select id="bgMode" onchange="toggleBgMode()" class="w-full bg-white border border-gray-200 text-gray-900 text-xs font-bold rounded-xl px-4 py-3 outline-none focus:border-black cursor-pointer">
-                    <option value="minecraft">Minecraft Parkour</option>
-                    <option value="subway">Subway Surfers</option>
-                    <option value="slime">Satisfying Slime</option>
-                    <option value="upload">Custom Video Upload</option>
+            <section class="space-y-3">
+                <h2 class="text-xs font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 font-bold border border-gray-200">3</span> VISUALS
+                </h2>
+                <select id="bgMode" onchange="toggleBgMode()" class="w-full bg-white border border-gray-200 text-gray-900 text-xs font-medium rounded-xl px-3 py-3 outline-none focus:border-black shadow-sm cursor-pointer">
+                    <option value="minecraft">Minecraft Gameplay</option>
+                    <option value="upload">Custom Upload</option>
+                    <option value="solid">Solid Black</option>
                 </select>
                 
-                <input type="file" id="bgVideoInput" accept="video/*" class="hidden" onchange="handleVideoUpload(this.files[0])">
-                
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between text-[9px] font-bold text-gray-400"><span>TEXT Y-AXIS</span> <span id="yVal">0</span></div>
-                    <input type="range" id="textY" min="-300" max="300" value="0" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="renderPreview(); document.getElementById('yVal').innerText = this.value">
+                <div id="uploadZone" class="hidden border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:bg-white hover:border-black transition-all" onclick="document.getElementById('bgVideoInput').click()">
+                     <input type="file" id="bgVideoInput" accept="video/*" class="hidden" onchange="handleVideoUpload(this.files[0])">
+                     <span class="text-[10px] text-gray-500 font-bold uppercase">Click to Upload .MP4</span>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Text Color</label>
+                        <input type="color" id="textColor" value="#ffffff" class="w-full h-8 rounded-lg cursor-pointer bg-white border border-gray-200 p-0.5">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Highlight</label>
+                        <input type="color" id="highlightColor" value="#fbbf24" class="w-full h-8 rounded-lg cursor-pointer bg-white border border-gray-200 p-0.5">
+                    </div>
+                </div>
+                <div class="pt-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block">Y Position</label>
+                    <input type="range" id="textY" min="-300" max="300" value="0" class="w-full" oninput="renderPreview()">
                 </div>
             </section>
-
-            <div class="h-6"></div>
         </div>
 
-        <div class="p-5 border-t border-gray-200 bg-white grid grid-cols-[1fr_2fr_1fr] gap-3 z-30">
-            <button onclick="saveToLibrary()" class="bg-gray-100 hover:bg-gray-200 text-black rounded-xl font-bold text-xs transition-colors">SAVE</button>
-            <button onclick="togglePlay()" id="playBtn" disabled class="bg-black text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
+        <div class="p-5 border-t border-gray-200 bg-white grid grid-cols-2 gap-3 z-40">
+            <button onclick="togglePlay()" id="playBtn" class="bg-black text-white py-3.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 hover:bg-gray-800">
                 <i data-lucide="play" class="w-4 h-4"></i> PREVIEW
             </button>
-            <button onclick="startExport()" id="exportBtn" disabled class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 transition-colors">
-                EXPORT
+            
+            <button onclick="saveProjectToCloud()" id="saveBtn" disabled class="bg-gray-100 text-gray-400 cursor-not-allowed py-3.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2">
+                <i data-lucide="cloud" class="w-4 h-4"></i> SAVE CLOUD
             </button>
         </div>
     </div>
 
-    <div class="flex-1 bg-gray-50 relative flex items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
+    <div class="flex-1 bg-gray-50 relative flex justify-center items-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
         
-        <div id="toast" class="absolute top-6 bg-white border border-gray-200 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transition-all opacity-0 -translate-y-4 z-50">
-            <div id="toastIcon" class="w-2 h-2 rounded-full bg-black"></div>
-            <span id="toastMsg" class="text-xs font-bold text-gray-900">Notification</span>
-        </div>
+        <div id="toast" class="fixed top-5 right-5 z-50 transition-all opacity-0 translate-x-4"></div>
 
-        <div class="canvas-container">
+        <div class="canvas-container" id="canvasWrapper">
             <canvas id="mainCanvas" class="w-full h-full object-contain"></canvas>
-            <video id="bgVideo" class="absolute opacity-0 pointer-events-none" loop muted playsinline></video>
-            
-            <div id="renderOverlay" class="absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
-                <div class="loader mb-4"></div>
-                <h3 class="font-black text-sm tracking-widest text-gray-900">RENDERING VIDEO</h3>
-                <p id="renderProgress" class="text-xs text-gray-400 font-mono mt-2">0%</p>
-                <button onclick="cancelExport()" class="mt-8 text-[10px] font-bold text-red-500 hover:underline">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="proModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center backdrop-blur-sm px-4">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div class="bg-gradient-pro p-6 text-center text-white relative overflow-hidden">
-                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                <div class="relative z-10">
-                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-md border border-white/30">
-                        <i data-lucide="crown" class="w-6 h-6 text-white"></i>
-                    </div>
-                    <h2 class="text-xl font-black tracking-tight">Upgrade to Pro</h2>
-                    <p class="text-white/80 text-xs font-medium mt-1">Unlock 15+ AI Voice Engines & Unlimited Videos</p>
-                </div>
-            </div>
-            
-            <div class="p-6 space-y-4">
-                <div class="space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i data-lucide="check" class="w-3 h-3"></i></div>
-                        <span class="text-xs font-bold text-gray-700">Unlimited Video Exports (No Quota)</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i data-lucide="check" class="w-3 h-3"></i></div>
-                        <span class="text-xs font-bold text-gray-700">Access ElevenLabs, OpenAI, Azure & More</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i data-lucide="check" class="w-3 h-3"></i></div>
-                        <span class="text-xs font-bold text-gray-700">Commercial Rights & Priority Rendering</span>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <button onclick="simulateUpgrade()" class="w-full bg-black text-white py-4 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform shadow-xl">
-                        Start Pro Trial ($29/mo)
-                    </button>
-                    <button onclick="closeProModal()" class="w-full mt-3 text-xs font-bold text-gray-400 hover:text-gray-600">No thanks, I'll stick to free</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="keyModal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-xl w-[350px] p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-sm">Gemini API Configuration</h3>
-                <button onclick="toggleKeyModal()"><i data-lucide="x" class="w-4 h-4 text-gray-400"></i></button>
-            </div>
-            <div>
-                <p class="text-[10px] text-gray-500 mb-2">Provide your own key to use Google's AI for scripts and free TTS without using your weekly quota.</p>
-                <input id="apiKey" type="password" class="w-full bg-gray-50 border border-gray-200 rounded px-3 py-2 text-xs font-mono focus:border-black outline-none" placeholder="Paste Gemini API Key">
-            </div>
-            <button onclick="saveKey()" class="w-full bg-black text-white py-3 rounded-lg text-xs font-bold">Save Key</button>
+            <video id="bgVideo" class="absolute top-0 left-0 w-px h-px opacity-0 pointer-events-none" loop muted playsinline></video>
         </div>
     </div>
 
     <script>
-        // --- CONFIG & STATE ---
-        const CONFIG = { w: 1080, h: 1920, quota: 5 };
+        // --- CORE ENGINE ---
+        const CONFIG = { width: 1080, height: 1920 };
         let STATE = {
-            isPro: false,
-            usedQuota: 0,
-            voice: 'Male',
+            voice: 'Puck',
             audioCtx: null,
-            ttsBuffer: null,
             bgBuffer: null,
+            ttsBuffer: null,
             words: [],
             isPlaying: false,
-            isExporting: false,
             startTime: 0,
-            animId: null,
-            sourceNodes: []
+            animationId: null,
+            sourceNodes: [],
+            user: null
         };
+
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
         const video = document.getElementById('bgVideo');
 
-        // --- INIT ---
-        window.onload = () => {
+        // --- INITIALIZATION ---
+        window.onload = async () => {
             lucide.createIcons();
-            canvas.width = CONFIG.w; canvas.height = CONFIG.h;
+            canvas.width = CONFIG.width; canvas.height = CONFIG.height;
             
-            // Load Persistent Data
-            loadUserStats();
-            const conf = JSON.parse(localStorage.getItem('dingle_conf') || '{}');
-            if(conf.key) document.getElementById('apiKey').value = conf.key;
+            // Puter Auth Check
+            if (window.puter) {
+                try {
+                    const resp = await puter.auth.getUser();
+                    if (resp.user) {
+                        handleLoginSuccess(resp.user);
+                    } else {
+                        handleGuestMode();
+                    }
+                } catch (e) { handleGuestMode(); }
+            } else {
+                handleGuestMode();
+            }
 
-            // Default Video
-            video.src = 'https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1610-large.mp4';
+            document.body.addEventListener('click', initAudio, { once: true });
+            video.src = 'minecraft.mp4';
             video.load();
             renderPreview();
-
-            // Audio Context Unlock
-            document.body.addEventListener('click', () => {
-                if(!STATE.audioCtx) STATE.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if(STATE.audioCtx.state === 'suspended') STATE.audioCtx.resume();
-            }, { once: true });
         };
 
-        // --- SAAS LOGIC (QUOTA & PRO) ---
-        function loadUserStats() {
-            const stats = JSON.parse(localStorage.getItem('dingle_stats') || '{"used": 0, "isPro": false, "lastReset": 0}');
-            
-            // Weekly Reset Logic (Simulation)
-            const now = Date.now();
-            if(now - stats.lastReset > 604800000) { // 7 days
-                stats.used = 0;
-                stats.lastReset = now;
-            }
-
-            STATE.isPro = stats.isPro;
-            STATE.usedQuota = stats.used;
-            updateUIStats();
+        function initAudio() {
+            if (!STATE.audioCtx) STATE.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (STATE.audioCtx.state === 'suspended') STATE.audioCtx.resume();
         }
 
-        function updateUIStats() {
-            // Plan Badge
-            const badge = document.getElementById('planBadge');
-            badge.innerText = STATE.isPro ? "PRO PLAN" : "FREE PLAN";
-            badge.className = STATE.isPro ? "text-[10px] font-bold bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded uppercase tracking-wider" : "text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded uppercase tracking-wider";
-            
-            // Quota Bar
-            const bar = document.getElementById('quotaBar');
-            const text = document.getElementById('quotaText');
-            
-            if(STATE.isPro) {
-                text.innerText = "Unlimited Access";
-                bar.style.width = "100%";
-                bar.classList.add('bg-gradient-pro');
-            } else {
-                const pct = (STATE.usedQuota / CONFIG.quota) * 100;
-                bar.style.width = `${pct}%`;
-                bar.className = `h-full transition-all duration-500 ${pct >= 100 ? 'bg-red-500' : 'bg-black'}`;
-                text.innerText = `${STATE.usedQuota} / ${CONFIG.quota} Videos Used`;
-            }
-        }
-
-        function checkQuota() {
-            if(STATE.isPro) return true;
-            if(STATE.usedQuota >= CONFIG.quota) {
-                openProModal();
-                return false;
-            }
-            return true;
-        }
-
-        function consumeQuota() {
-            if(!STATE.isPro) {
-                STATE.usedQuota++;
-                localStorage.setItem('dingle_stats', JSON.stringify({
-                    used: STATE.usedQuota, 
-                    isPro: STATE.isPro, 
-                    lastReset: Date.now() // Simple reset for demo
-                }));
-                updateUIStats();
-            }
-        }
-
-        function simulateUpgrade() {
-            const btn = document.querySelector('#proModal button');
-            btn.innerHTML = "Processing Payment...";
-            setTimeout(() => {
-                STATE.isPro = true;
-                localStorage.setItem('dingle_stats', JSON.stringify({ used: 0, isPro: true, lastReset: Date.now() }));
-                updateUIStats();
-                closeProModal();
-                showToast("Welcome to Pro!", "success");
-            }, 1500);
-        }
-
-        // --- API & MODALS ---
-        function handleApiChange() {
-            const provider = document.getElementById('apiProvider').value;
-            const freeOnes = ['browser', 'gemini'];
-            
-            if(!freeOnes.includes(provider) && !STATE.isPro) {
-                // If user selects Premium but is Free -> Revert & Show Modal
-                document.getElementById('apiProvider').value = 'browser';
-                openProModal();
-            }
-        }
-
-        function openProModal() { document.getElementById('proModal').classList.remove('hidden'); }
-        function closeProModal() { document.getElementById('proModal').classList.add('hidden'); }
-        function toggleSettings() { toggleKeyModal(); } // Legacy mapping
-        function toggleKeyModal() { document.getElementById('keyModal').classList.toggle('hidden'); }
-        
-        function saveKey() {
-            const k = document.getElementById('apiKey').value;
-            localStorage.setItem('dingle_conf', JSON.stringify({ key: k }));
-            toggleKeyModal();
-            showToast("API Key Saved", "success");
-        }
-
-        // --- CONTENT ENGINES ---
-        async function fetchReddit() {
-            if(!checkQuota()) return;
+        // --- PUTER AUTH & GATING ---
+        async function loginPuter() {
             try {
-                const subs = ['confessions','tifu','AmItheAsshole'];
-                const sub = subs[Math.floor(Math.random()*subs.length)];
-                const res = await fetch(`https://www.reddit.com/r/${sub}/top.json?limit=20&t=week`);
-                const json = await res.json();
-                const posts = json.data.children.filter(p => !p.data.over_18 && p.data.selftext.length > 150 && p.data.selftext.length < 800);
-                if(!posts.length) throw new Error("No clean posts found");
-                const p = posts[Math.floor(Math.random()*posts.length)].data;
-                
-                document.getElementById('topicInput').value = `r/${sub}: ${p.title}`;
-                document.getElementById('scriptText').value = p.selftext.trim();
-                showToast("Viral Story Fetched", "success");
-            } catch(e) { showToast("Fetch Error", "error"); }
+                const user = await puter.auth.signIn();
+                handleLoginSuccess(user);
+            } catch (error) {
+                console.error(error);
+                showToast("Login Failed", 'error');
+            }
         }
 
-        async function generateAI() {
+        async function signOutPuter() {
+            await puter.auth.signOut();
+            window.location.reload();
+        }
+
+        function handleLoginSuccess(user) {
+            STATE.user = user;
+            document.getElementById('authSection').innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-gray-500 truncate max-w-[80px]">${user.username}</span>
+                    <button onclick="signOutPuter()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg text-[10px] font-bold">Sign Out</button>
+                </div>
+            `;
+            document.getElementById('userStatus').innerText = "Pro (FWQ)";
+            document.getElementById('userStatus').className = "text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full";
+            
+            // Unlock Features
+            document.getElementById('scriptLock').classList.add('hidden');
+            document.getElementById('ttsLock').classList.add('hidden');
+            document.getElementById('keyInputZone').classList.remove('hidden'); // Show Key input for TTS
+            
+            // Enable Save
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
+            saveBtn.classList.add('bg-emerald-600', 'text-white', 'hover:bg-emerald-700');
+            
+            // Try load key from cloud
+            loadProjectFromCloud();
+        }
+
+        function handleGuestMode() {
+            document.getElementById('scriptLock').classList.remove('hidden');
+            document.getElementById('ttsLock').classList.remove('hidden');
+            
+            // Blur sections
+            document.querySelector('#scriptText').parentElement.classList.add('gated-content');
+            document.querySelector('#voice-Puck').parentElement.nextElementSibling.classList.add('gated-content');
+            document.getElementById('synthBtn').disabled = true;
+            document.getElementById('synthBtn').innerText = "Sign In Required";
+        }
+
+        // --- PUTER CLOUD SAVE ---
+        async function saveProjectToCloud() {
+            if(!STATE.user) return;
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="loader border-white border-t-transparent w-4 h-4"></div> Saving...';
+            
+            // The "10 Items" to save
+            const projectData = {
+                script: document.getElementById('scriptText').value,
+                topic: document.getElementById('topicInput').value,
+                voice: STATE.voice,
+                musicVol: document.getElementById('musicVol').value,
+                voiceSpeed: document.getElementById('voiceSpeed').value,
+                textColor: document.getElementById('textColor').value,
+                highlightColor: document.getElementById('highlightColor').value,
+                textY: document.getElementById('textY').value,
+                bgMode: document.getElementById('bgMode').value,
+                apiKey: document.getElementById('apiKey').value, // Saving Key to cloud for convenience
+                timestamp: Date.now()
+            };
+
+            try {
+                await puter.kv.set('dingle_project_latest', JSON.stringify(projectData));
+                showToast("Project Saved to Cloud", 'success');
+            } catch(e) { showToast("Save Failed", 'error'); }
+            
+            btn.innerHTML = originalText;
+        }
+
+        async function loadProjectFromCloud() {
+            try {
+                const raw = await puter.kv.get('dingle_project_latest');
+                if(raw) {
+                    const data = JSON.parse(raw);
+                    if(data.script) document.getElementById('scriptText').value = data.script;
+                    if(data.topic) document.getElementById('topicInput').value = data.topic;
+                    if(data.voice) selectVoice(data.voice);
+                    if(data.musicVol) { document.getElementById('musicVol').value = data.musicVol; document.getElementById('volVal').innerText = Math.round(data.musicVol*100)+'%'; }
+                    if(data.voiceSpeed) { document.getElementById('voiceSpeed').value = data.voiceSpeed; document.getElementById('speedVal').innerText = data.voiceSpeed+'x'; }
+                    if(data.textColor) document.getElementById('textColor').value = data.textColor;
+                    if(data.highlightColor) document.getElementById('highlightColor').value = data.highlightColor;
+                    if(data.textY) document.getElementById('textY').value = data.textY;
+                    if(data.bgMode) { document.getElementById('bgMode').value = data.bgMode; toggleBgMode(); }
+                    if(data.apiKey) document.getElementById('apiKey').value = data.apiKey;
+                    showToast("Cloud Project Loaded", 'success');
+                }
+            } catch(e) { console.log("No cloud save found"); }
+        }
+
+        // --- FWQ AI GENERATION ---
+        async function generatePuterScript() {
+            if (!STATE.user) return showToast("Login Required", 'error');
+            
+            const btn = document.querySelector('button[onclick="generatePuterScript()"]');
+            btn.disabled = true; btn.innerHTML = '...';
+            
+            const topic = document.getElementById('topicInput').value;
+            
+            try {
+                // Using Puter's FWQ AI
+                const response = await puter.ai.chat(`Write a viral short script about: ${topic}. Style: Reddit Story. Max 100 words. Hook first sentence. No bolding.`);
+                document.getElementById('scriptText').value = response;
+                showToast("Generated with Puter AI", 'success');
+            } catch(e) {
+                showToast("AI Error: " + e, 'error');
+            }
+            
+            btn.disabled = false; btn.innerHTML = '<i data-lucide="sparkles" class="w-3 h-3"></i> AI Write';
+        }
+
+        // --- AUDIO ENGINE (Legacy Gemini Logic gated) ---
+        async function synthesizeAudio() {
+            if (!STATE.user) return showToast("Login Required", 'error');
+            
             const key = document.getElementById('apiKey').value;
-            if(!key) return toggleKeyModal(); // BYOK needed for AI generation
-            
-            const model = "gemini-1.5-flash"; // Cheap/Free model
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
-                    method: 'POST', headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Write a viral short script about: ${document.getElementById('topicInput').value || 'Random Topic'}. Max 100 words. No intro.` }] }] })
-                });
-                const data = await res.json();
-                document.getElementById('scriptText').value = data.candidates[0].content.parts[0].text;
-                showToast("Script Generated", "success");
-            } catch(e) { showToast("AI Error", "error"); }
-        }
-
-        // --- AUDIO ENGINE ---
-        function selectVoice(v) {
-            STATE.voice = v;
-            document.getElementById('v-Male').className = v==='Male' ? "voice-btn bg-black text-white py-2.5 rounded-lg text-xs font-bold shadow-md transition-all" : "voice-btn bg-white border border-gray-200 text-gray-500 py-2.5 rounded-lg text-xs font-bold hover:bg-gray-50 transition-all";
-            document.getElementById('v-Female').className = v==='Female' ? "voice-btn bg-black text-white py-2.5 rounded-lg text-xs font-bold shadow-md transition-all" : "voice-btn bg-white border border-gray-200 text-gray-500 py-2.5 rounded-lg text-xs font-bold hover:bg-gray-50 transition-all";
-        }
-
-        async function generateAudio() {
-            const provider = document.getElementById('apiProvider').value;
             const text = document.getElementById('scriptText').value;
-            if(!text) return showToast("Enter text first", "error");
-
-            // QUOTA CHECK
-            if(provider !== 'gemini' && !checkQuota()) return; 
+            
+            // If they haven't provided a key, we can't use Gemini TTS.
+            if(!key) return showToast("API Key needed for TTS (See settings)", 'error');
 
             const btn = document.getElementById('synthBtn');
-            const oldHtml = btn.innerHTML;
-            btn.innerHTML = "GENERATING..."; btn.disabled = true;
+            btn.innerHTML = 'Synthesizing...'; btn.disabled = true;
 
             try {
-                if(!STATE.audioCtx) STATE.audioCtx = new AudioContext();
+                const endpoint = "gemini-2.0-flash-exp"; 
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${endpoint}:generateContent?key=${key}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        contents: [{ parts: [{ text: text }] }], 
+                        generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: STATE.voice } } } } 
+                    })
+                });
+                const data = await res.json();
+                if(data.error) throw new Error(data.error.message);
 
-                if (provider === 'browser') {
-                    // Browser TTS (Free, Offline)
-                    await generateBrowserTTS(text);
-                } else if (provider === 'gemini') {
-                    // Gemini BYOK (Free)
-                    const key = document.getElementById('apiKey').value;
-                    if(!key) { toggleKeyModal(); throw new Error("Key required"); }
-                    await generateGeminiTTS(text, key);
-                } else {
-                    // PREMIUM PROVIDER SIMULATION
-                    // Since we don't have real keys for 15 APIs, we mock the Pro experience
-                    // In a real app, this would call your backend proxy
-                    await new Promise(r => setTimeout(r, 1500)); // Fake processing
-                    // Fallback to browser TTS for the demo, but "pretend" it's premium
-                    await generateBrowserTTS(text); 
-                }
+                const binaryString = atob(data.candidates[0].content.parts[0].inlineData.data);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+                
+                initAudio();
+                STATE.ttsBuffer = await STATE.audioCtx.decodeAudioData(bytes.buffer);
+                
+                // Density Calc
+                const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+                const totalDur = STATE.ttsBuffer.duration;
+                let charCount = text.length;
+                let currentTime = 0;
+                STATE.words = [];
+                sentences.forEach(sent => {
+                    const sentDur = (sent.length / charCount) * totalDur;
+                    const sentWords = sent.trim().split(/\s+/);
+                    const wordDur = sentDur / sentWords.length;
+                    sentWords.forEach(w => {
+                        STATE.words.push({ word: w, start: currentTime, end: currentTime + wordDur });
+                        currentTime += wordDur;
+                    });
+                });
 
-                showToast("Audio Ready", "success");
-                
-                // Deduct quota ONLY if not BYOK
-                if(provider !== 'gemini') consumeQuota();
-                
-                enableControls();
-            } catch(e) { console.error(e); showToast("Generation Failed", "error"); }
+                showToast("Audio Ready", 'success');
+            } catch(e) { showToast("TTS Failed: " + e.message, 'error'); }
             
-            btn.innerHTML = oldHtml; btn.disabled = false;
+            btn.innerHTML = 'Generate Audio'; btn.disabled = false;
         }
 
-        function generateBrowserTTS(text) {
-            return new Promise((resolve) => {
-                const utt = new SpeechSynthesisUtterance(text);
-                // Try to find a decent voice
-                const voices = window.speechSynthesis.getVoices();
-                const preferred = voices.find(v => v.name.includes(STATE.voice === 'Male' ? 'David' : 'Zira') || v.name.includes('Google'));
-                if(preferred) utt.voice = preferred;
-                
-                // Record the speech to a buffer (Hack using MediaStreamDestination isn't perfect for TTS, 
-                // so for this demo we calculate timing and play purely via synthesis for preview, 
-                // but for export we'd need a server. For this standalone demo, we Mock buffer creation).
-                
-                // MOCK BUFFER (Silence with correct duration)
-                // Why? Because Browser TTS API doesn't give audio data easily without backend.
-                // We will use a dummy buffer for the Visualizer to "work"
-                const dur = text.split(' ').length * 0.4; // Approx duration
-                const buffer = STATE.audioCtx.createBuffer(1, STATE.audioCtx.sampleRate * dur, STATE.audioCtx.sampleRate);
-                STATE.ttsBuffer = buffer;
-                
-                // Timing logic
-                calcTimings(text, dur);
-                resolve();
-            });
+        // --- ASSET HELPERS ---
+        async function loadPresetAudio() {
+            try {
+                const res = await fetch('relaxed.mp3');
+                const buf = await res.arrayBuffer();
+                initAudio();
+                STATE.bgBuffer = await STATE.audioCtx.decodeAudioData(buf);
+                document.getElementById('musicName').innerText = "Preset: Relaxed";
+                showToast("Music Loaded", 'success');
+            } catch(e) { showToast("Missing 'relaxed.mp3'", 'error'); }
         }
 
-        async function generateGeminiTTS(text, key) {
-            // Real API Call
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${key}`, {
-                method: 'POST', headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ contents: [{ parts: [{ text }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: STATE.voice === 'Male' ? 'Puck' : 'Kore' } } } } })
-            });
-            const data = await res.json();
-            const bin = atob(data.candidates[0].content.parts[0].inlineData.data);
-            const bytes = new Uint8Array(bin.length);
-            for(let i=0; i<bin.length; i++) bytes[i] = bin.charCodeAt(i);
-            STATE.ttsBuffer = await STATE.audioCtx.decodeAudioData(bytes.buffer);
-            calcTimings(text, STATE.ttsBuffer.duration);
-        }
-
-        function calcTimings(text, dur) {
-            const words = text.replace(/[\n\r]/g,' ').split(' ').filter(x=>x);
-            const perWord = dur / words.length;
-            let t = 0;
-            STATE.words = words.map(w => {
-                const d = { word: w, start: t, end: t+perWord };
-                t+=perWord;
-                return d;
-            });
+        function handleMusicUpload(el) {
+            if(!el.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                initAudio();
+                STATE.bgBuffer = await STATE.audioCtx.decodeAudioData(e.target.result);
+                document.getElementById('musicName').innerText = el.files[0].name;
+            };
+            reader.readAsArrayBuffer(el.files[0]);
         }
 
         // --- PLAYBACK ---
         function togglePlay() { STATE.isPlaying ? stop() : play(); }
 
         function play() {
-            if(!STATE.ttsBuffer && document.getElementById('apiProvider').value !== 'browser') return;
-            
-            STATE.startTime = STATE.audioCtx.currentTime;
+            if (!STATE.ttsBuffer && STATE.user) return showToast("Generate Audio First", 'error');
+            if (!STATE.ttsBuffer && !STATE.user) return showToast("Login Required", 'error');
+
             STATE.sourceNodes = [];
+            STATE.startTime = STATE.audioCtx.currentTime;
+            
+            const ttsNode = STATE.audioCtx.createBufferSource();
+            ttsNode.buffer = STATE.ttsBuffer;
+            ttsNode.playbackRate.value = parseFloat(document.getElementById('voiceSpeed').value);
+            ttsNode.connect(STATE.audioCtx.destination);
+            ttsNode.start(0);
+            ttsNode.onended = () => { if(STATE.isPlaying) stop(); };
+            STATE.sourceNodes.push(ttsNode);
 
-            // If Browser TTS (Special Case)
-            if(document.getElementById('apiProvider').value === 'browser') {
-                window.speechSynthesis.cancel();
-                const utt = new SpeechSynthesisUtterance(document.getElementById('scriptText').value);
-                // Attempt to match voice again
-                const voices = window.speechSynthesis.getVoices();
-                const preferred = voices.find(v => v.name.includes(STATE.voice === 'Male' ? 'David' : 'Zira') || v.name.includes('Google'));
-                if(preferred) utt.voice = preferred;
-                
-                utt.onend = () => stop();
-                window.speechSynthesis.speak(utt);
-            } else {
-                // Buffer Playback
-                const src = STATE.audioCtx.createBufferSource();
-                src.buffer = STATE.ttsBuffer;
-                src.connect(STATE.audioCtx.destination);
-                src.start(0);
-                src.onended = () => { if(STATE.isPlaying) stop(); };
-                STATE.sourceNodes.push(src);
-            }
-
-            // Music
-            if(STATE.bgBuffer) {
-                const bg = STATE.audioCtx.createBufferSource();
-                bg.buffer = STATE.bgBuffer; bg.loop = true;
+            if (STATE.bgBuffer) {
+                const bgNode = STATE.audioCtx.createBufferSource();
+                bgNode.buffer = STATE.bgBuffer;
+                bgNode.loop = true;
                 const gain = STATE.audioCtx.createGain();
                 gain.gain.value = parseFloat(document.getElementById('musicVol').value);
-                bg.connect(gain).connect(STATE.audioCtx.destination);
-                bg.start(0);
-                STATE.sourceNodes.push(bg);
+                bgNode.connect(gain).connect(STATE.audioCtx.destination);
+                bgNode.start(0);
+                STATE.sourceNodes.push(bgNode);
             }
 
-            video.currentTime = 0; video.play();
+            video.currentTime = 0;
+            video.play();
             STATE.isPlaying = true;
             document.getElementById('playBtn').innerHTML = '<i data-lucide="square" class="w-3 h-3"></i> STOP';
             animate();
         }
 
         function stop() {
-            window.speechSynthesis.cancel();
             STATE.sourceNodes.forEach(n => { try{n.stop()}catch(e){} });
             video.pause();
             STATE.isPlaying = false;
-            cancelAnimationFrame(STATE.animId);
+            cancelAnimationFrame(STATE.animationId);
             document.getElementById('playBtn').innerHTML = '<i data-lucide="play" class="w-3 h-3"></i> PREVIEW';
-            renderPreview();
+            renderPreview(); 
         }
 
-        // --- RENDERER ---
         function animate() {
-            if(!STATE.isPlaying) return;
-            const t = STATE.audioCtx.currentTime - STATE.startTime;
-            drawFrame(t);
-            STATE.animId = requestAnimationFrame(animate);
+            if (!STATE.isPlaying) return;
+            const elapsed = (STATE.audioCtx.currentTime - STATE.startTime) * parseFloat(document.getElementById('voiceSpeed').value);
+            drawFrame(elapsed);
+            STATE.animationId = requestAnimationFrame(animate);
         }
 
-        function drawFrame(t) {
-            // Draw Video
-            if(document.getElementById('bgMode').value !== 'solid') {
+        function drawFrame(time) {
+            if (document.getElementById('bgMode').value !== 'solid') {
                 const aspect = video.videoWidth / video.videoHeight;
                 const canvasAspect = canvas.width / canvas.height;
                 let dw, dh, dx, dy;
-                if(aspect > canvasAspect) { dh = canvas.height; dw = dh * aspect; dx = (canvas.width - dw)/2; dy = 0; }
+                if (aspect > canvasAspect) { dh = canvas.height; dw = dh * aspect; dx = (canvas.width - dw)/2; dy = 0; }
                 else { dw = canvas.width; dh = dw / aspect; dx = 0; dy = (canvas.height - dh)/2; }
                 ctx.drawImage(video, dx, dy, dw, dh);
             } else {
                 ctx.fillStyle = '#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
             }
+
             ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0,0,canvas.width,canvas.height);
 
-            // Draw Text
-            // For Browser TTS, timing is approximate based on t
-            let maxDur = STATE.ttsBuffer ? STATE.ttsBuffer.duration : (document.getElementById('scriptText').value.split(' ').length * 0.4);
+            const activeData = STATE.words.find(w => time >= w.start && time < w.end) || STATE.words[STATE.words.length-1];
             
-            if(t < maxDur + 1) {
-                const active = STATE.words.find(w => t >= w.start && t < w.end) || STATE.words[STATE.words.length-1];
-                if(active) {
-                    const fontSize = 80;
-                    ctx.font = `900 ${fontSize}px "Inter", sans-serif`;
-                    ctx.textAlign = 'center';
-                    
-                    const word = active.word.toUpperCase().replace(/[^A-Z0-9']/g,'');
-                    const y = canvas.height/2 + parseInt(document.getElementById('textY').value);
-                    const isHi = ['WHAT','NO','STOP','SECRET','CRAZY'].some(x=>word.includes(x));
-                    
-                    ctx.lineWidth = 18; ctx.strokeStyle='black'; ctx.lineJoin='round';
-                    ctx.strokeText(word, canvas.width/2, y);
-                    ctx.fillStyle = isHi ? document.getElementById('highlightColor').value : document.getElementById('textColor').value;
-                    ctx.fillText(word, canvas.width/2, y);
-                }
+            if (activeData && time < (STATE.ttsBuffer.duration * 1.1)) {
+                const fontSize = 70;
+                ctx.font = `900 ${fontSize}px "Montserrat", sans-serif`;
+                ctx.textAlign = 'center';
+                const yPos = canvas.height/2 + parseInt(document.getElementById('textY').value);
+                const currentWord = activeData.word.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                
+                ctx.lineJoin = 'round'; ctx.lineWidth = 15; ctx.strokeStyle = 'black';
+                ctx.strokeText(currentWord, canvas.width/2, yPos);
+                ctx.fillStyle = document.getElementById('textColor').value;
+                ctx.fillText(currentWord, canvas.width/2, yPos);
             }
         }
 
         function renderPreview() {
             if(STATE.isPlaying) return;
-            ctx.fillStyle = '#111'; ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.font = '700 40px "Inter"'; ctx.fillStyle = '#333'; ctx.textAlign = 'center';
-            ctx.fillText("PREVIEW MODE", canvas.width/2, canvas.height/2);
+            ctx.fillStyle = '#000'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.font = '900 80px "Montserrat"'; ctx.fillStyle = '#333'; ctx.textAlign = 'center';
+            ctx.fillText("PREVIEW", canvas.width/2, canvas.height/2);
         }
 
         // --- UTILS ---
+        function selectVoice(v) {
+            STATE.voice = v;
+            document.querySelectorAll('.voice-btn').forEach(b => b.className = "voice-btn bg-white text-gray-500 border border-gray-200 rounded-xl py-2.5 text-xs font-bold hover:border-gray-400");
+            document.getElementById('voice-'+v).className = "voice-btn bg-black text-white border border-transparent rounded-xl py-2.5 text-xs font-bold shadow-md";
+        }
         function toggleBgMode() {
-            const m = document.getElementById('bgMode').value;
-            if(m === 'upload') document.getElementById('bgVideoInput').click();
-            else if(m === 'minecraft') video.src = 'https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1610-large.mp4';
-            else if(m === 'subway') video.src = 'https://assets.mixkit.co/videos/preview/mixkit-red-and-blue-ink-in-water-1996-large.mp4'; // Placeholder
-            else if(m === 'slime') video.src = 'https://assets.mixkit.co/videos/preview/mixkit-pink-and-blue-ink-swirling-in-water-1613-large.mp4';
-            video.load();
+            const mode = document.getElementById('bgMode').value;
+            document.getElementById('uploadZone').style.display = mode === 'upload' ? 'block' : 'none';
+            if(mode === 'minecraft') { video.src = 'minecraft.mp4'; video.load(); }
             renderPreview();
         }
         function handleVideoUpload(f) { if(f) video.src = URL.createObjectURL(f); }
         function showToast(msg, type) {
             const t = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = msg;
-            document.getElementById('toastIcon').className = `w-2 h-2 rounded-full ${type=='error'?'bg-red-500':'bg-emerald-500'}`;
-            t.style.opacity = 1; t.style.transform = 'translateY(0)';
-            setTimeout(() => t.style.opacity = 0, 3000);
+            t.className = `fixed top-5 right-5 z-50 px-4 py-3 rounded-lg font-bold text-xs transition-all shadow-lg ${type=='error'?'bg-red-500 text-white':'bg-emerald-500 text-white'}`;
+            t.innerText = msg; t.style.opacity = 1; t.style.transform = 'translateX(0)';
+            setTimeout(() => { t.style.opacity = 0; t.style.transform = 'translateX(20px)'; }, 3000);
         }
-        function enableControls() { ['playBtn','exportBtn'].forEach(id=>document.getElementById(id).disabled=false); }
-        
-        // Export logic same as before (WebM MediaRecorder)
-        async function startExport() {
-            if(document.getElementById('apiProvider').value === 'browser') {
-                alert("Browser TTS cannot be exported to video in this demo (security restriction). Use Gemini or Pro APIs for export.");
-                return;
-            }
-            // Standard MediaRecorder logic here... (omitted for brevity, same as previous version)
-        }
-        function cancelExport() { document.getElementById('renderOverlay').classList.add('hidden'); }
     </script>
 </body>
 </html>
