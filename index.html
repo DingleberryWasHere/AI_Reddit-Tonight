@@ -192,6 +192,16 @@
                         <option value="groq">Groq (Llama 3/Mixtral)</option>
                         <option value="openai">OpenAI (GPT-4/3.5)</option>
                     </select>
+
+                    <div id="puter-model-select" class="provider-key hidden space-y-1">
+                        <label class="text-[10px] text-gray-400 font-bold ml-1">Select Model</label>
+                        <select id="puterModel" class="w-full bg-gray-50 border border-gray-200 text-xs rounded-lg px-3 py-2 outline-none">
+                            <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
+                            <option value="claude-3-5-sonnet">Claude 3.5 Sonnet (Best Quality)</option>
+                            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                            <option value="meta-llama/llama-3.1-70b-instruct">Llama 3.1 70B</option>
+                        </select>
+                    </div>
                     
                     <div id="key-gemini" class="provider-key hidden space-y-1">
                         <input id="geminiKey" type="password" class="w-full bg-gray-50 border border-gray-200 text-[10px] rounded-lg px-3 py-2 outline-none font-mono" placeholder="Paste Gemini API Key">
@@ -244,6 +254,7 @@
         // Default Settings
         let SETTINGS = {
             genProvider: 'puter',
+            puterModel: 'gpt-4o-mini', // Default Puter model
             ttsProvider: 'gemini',
             keys: { gemini: '', groq: '', openai: '' }
         };
@@ -289,7 +300,8 @@
             // Hide all keys first
             document.querySelectorAll('.provider-key').forEach(el => el.classList.add('hidden'));
             
-            // Show relevant key input
+            // Show relevant input
+            if(gen === 'puter') document.getElementById('puter-model-select').classList.remove('hidden');
             if(gen === 'gemini') document.getElementById('key-gemini').classList.remove('hidden');
             if(gen === 'groq') document.getElementById('key-groq').classList.remove('hidden');
             if(gen === 'openai') document.getElementById('key-openai').classList.remove('hidden');
@@ -300,6 +312,7 @@
 
         function saveSettings() {
             SETTINGS.genProvider = document.getElementById('genProvider').value;
+            SETTINGS.puterModel = document.getElementById('puterModel').value;
             SETTINGS.ttsProvider = document.getElementById('ttsProvider').value;
             SETTINGS.keys.gemini = document.getElementById('geminiKey').value;
             SETTINGS.keys.groq = document.getElementById('groqKey').value;
@@ -315,8 +328,9 @@
             const raw = localStorage.getItem('dingle_settings_v3');
             if(raw) {
                 SETTINGS = JSON.parse(raw);
-                document.getElementById('genProvider').value = SETTINGS.genProvider;
-                document.getElementById('ttsProvider').value = SETTINGS.ttsProvider;
+                document.getElementById('genProvider').value = SETTINGS.genProvider || 'puter';
+                document.getElementById('puterModel').value = SETTINGS.puterModel || 'gpt-4o-mini';
+                document.getElementById('ttsProvider').value = SETTINGS.ttsProvider || 'gemini';
                 document.getElementById('geminiKey').value = SETTINGS.keys.gemini || '';
                 document.getElementById('groqKey').value = SETTINGS.keys.groq || '';
                 document.getElementById('openaiKey').value = SETTINGS.keys.openai || '';
@@ -347,11 +361,11 @@
 
                 if (p === 'puter') {
                     if(!STATE.user) { 
-                        // Try guest puter, sometimes works, otherwise ask login
-                         try { text = await puter.ai.chat(prompt); } 
+                        // Try guest puter logic
+                         try { text = await puter.ai.chat(prompt, { model: SETTINGS.puterModel }); } 
                          catch(e){ throw new Error("Login required for Puter AI"); }
                     } else {
-                        text = await puter.ai.chat(prompt);
+                        text = await puter.ai.chat(prompt, { model: SETTINGS.puterModel });
                     }
                 } 
                 else if (p === 'gemini') {
@@ -381,6 +395,9 @@
                     const data = await res.json();
                     text = data.choices[0].message.content;
                 }
+
+                // Check for object response from Puter sometimes
+                if(typeof text === 'object' && text.message) text = text.message.content;
 
                 document.getElementById('scriptText').value = text;
                 showToast(`Generated via ${p.toUpperCase()}`, 'success');
@@ -421,8 +438,6 @@
                 else if (p === 'puter') {
                     // Puter TTS
                     const audio = await puter.ai.txt2speech(text);
-                    // Puter returns an Audio object. We need the buffer.
-                    // Hack: fetch the src of the audio object
                     const res = await fetch(audio.src);
                     const arr = await res.arrayBuffer();
                     initAudio();
