@@ -18,30 +18,30 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; overflow: hidden; }
         
         /* Custom Scrollbar */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #1e293b; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
 
         /* Sliders */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
-            background: #3b82f6; margin-top: -6px; cursor: pointer;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            background: #60a5fa; margin-top: -6px; cursor: pointer;
+            box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px rgba(96, 165, 250, 0.3);
         }
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; cursor: pointer; background: #334155; border-radius: 2px;
+            width: 100%; height: 4px; cursor: pointer; background: #1e293b; border-radius: 2px;
         }
 
         /* Canvas Phone Look */
         .canvas-container {
             height: 85vh; aspect-ratio: 9/16; max-width: 100%; position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            background: #000; border-radius: 24px; overflow: hidden; border: 8px solid #1e293b;
+            box-shadow: 0 0 0 10px #1e293b, 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: #000; border-radius: 30px; overflow: hidden;
         }
         
         /* Modal Transitions */
@@ -51,20 +51,20 @@
 </head>
 <body class="h-screen w-screen flex flex-col md:flex-row">
 
-    <div class="w-full md:w-[420px] flex flex-col border-r border-slate-800 bg-slate-900 z-30 shrink-0 h-full shadow-2xl">
+    <div class="w-full md:w-[420px] flex flex-col border-r border-slate-800 bg-slate-950 z-30 shrink-0 h-full shadow-2xl">
         
-        <div class="px-6 py-5 border-b border-slate-800 flex justify-between items-center bg-slate-900 shrink-0">
+        <div class="px-6 py-5 border-b border-slate-800 flex justify-between items-center bg-slate-950 shrink-0">
             <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-3">
                 <div class="bg-blue-600 text-white p-1.5 rounded-lg shadow-lg shadow-blue-500/20"><i data-lucide="zap" class="w-5 h-5"></i></div>
                 Dingle<span class="text-slate-500">AI</span>
             </h1>
             <div class="flex items-center gap-2">
                 <div id="authContainer">
-                    <button onclick="loginPuter()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 border border-slate-700">
+                    <button onclick="loginPuter()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 border border-slate-800">
                         <i data-lucide="log-in" class="w-3 h-3"></i> Login
                     </button>
                 </div>
-                <button onclick="toggleSettings()" class="bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-400 p-2 rounded-lg transition-all border border-slate-700">
+                <button onclick="toggleSettings()" class="bg-slate-900 hover:bg-blue-600 hover:text-white text-slate-400 p-2 rounded-lg transition-all border border-slate-800">
                     <i data-lucide="settings-2" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -75,41 +75,41 @@
             <section class="space-y-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xs font-bold text-blue-400 tracking-wider flex items-center gap-2 uppercase">
-                        <i data-lucide="file-text" class="w-4 h-4"></i> 1. The Story
+                        <span class="bg-blue-500/10 w-6 h-6 flex items-center justify-center rounded text-blue-500">1</span> The Story
                     </h2>
                     <div class="flex gap-2">
-                        <button onclick="fetchReddit()" class="bg-orange-500/10 text-orange-400 border border-orange-500/20 hover:bg-orange-500/20 px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5">
+                        <button onclick="fetchReddit()" class="bg-slate-800 hover:bg-orange-500/20 hover:text-orange-400 text-slate-400 border border-slate-700 px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5">
                             <i data-lucide="flame" class="w-3 h-3"></i> Viral Post
                         </button>
-                        <button onclick="generateAIScript()" id="aiBtn" class="bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5">
+                        <button onclick="generateAIScript()" id="aiBtn" class="bg-slate-800 hover:bg-blue-500/20 hover:text-blue-400 text-slate-400 border border-slate-700 px-3 py-1.5 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5">
                             <i data-lucide="sparkles" class="w-3 h-3"></i> AI Write
                         </button>
                     </div>
                 </div>
-                <div class="space-y-2">
-                    <input id="topicInput" type="text" value="r/confessions" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-slate-500" placeholder="Topic or Subreddit...">
-                    <textarea id="scriptText" rows="5" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-slate-300 resize-none leading-relaxed placeholder-slate-500" placeholder="Paste script or write topic above..."></textarea>
+                <div class="space-y-3">
+                    <input id="topicInput" type="text" value="r/confessions" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-slate-600" placeholder="Topic or Subreddit...">
+                    <textarea id="scriptText" rows="5" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-slate-200 resize-none leading-relaxed placeholder-slate-600" placeholder="Paste script or write topic above..."></textarea>
                 </div>
             </section>
 
             <section class="space-y-4">
                 <h2 class="text-xs font-bold text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
-                    <i data-lucide="mic-2" class="w-4 h-4"></i> 2. The Voice
+                     <span class="bg-emerald-500/10 w-6 h-6 flex items-center justify-center rounded text-emerald-500">2</span> The Voice
                 </h2>
                 
-                <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-4">
                     <div id="browserVoiceContainer" class="hidden space-y-2">
                         <label class="text-[10px] font-bold text-slate-400 uppercase">System Voice</label>
-                        <select id="browserVoiceSelect" class="w-full bg-slate-900 border border-slate-600 text-white text-xs rounded-lg px-2 py-2 outline-none"></select>
+                        <select id="browserVoiceSelect" class="w-full bg-slate-950 border border-slate-700 text-white text-xs rounded-lg px-3 py-2.5 outline-none cursor-pointer hover:border-slate-500 transition-colors"></select>
                     </div>
 
-                    <div class="flex items-center justify-between bg-slate-900 rounded-lg p-3 border border-slate-700">
+                    <div class="flex items-center justify-between bg-slate-950 rounded-lg p-3 border border-slate-800">
                          <div class="flex items-center gap-3">
-                             <button onclick="document.getElementById('bgMusicInput').click()" class="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center transition-all shadow-lg shadow-emerald-500/20">
+                             <button onclick="document.getElementById('bgMusicInput').click()" class="w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center transition-all shadow-lg shadow-emerald-900/50">
                                 <i data-lucide="music" class="w-4 h-4"></i>
                              </button>
                              <div class="flex flex-col">
-                                 <span class="text-[10px] font-bold text-slate-400 uppercase">Background Music</span>
+                                 <span class="text-[10px] font-bold text-slate-500 uppercase">Background Music</span>
                                  <span id="musicName" class="text-xs text-white font-medium truncate max-w-[150px]">None Selected</span>
                              </div>
                          </div>
@@ -118,60 +118,66 @@
                     
                     <div class="grid grid-cols-2 gap-6 px-1">
                         <div>
-                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase mb-2"><span>Music Vol</span><span id="volVal" class="text-white">20%</span></div>
+                            <div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase mb-2"><span>Music Vol</span><span id="volVal" class="text-white">20%</span></div>
                             <input type="range" id="musicVol" min="0" max="1" step="0.05" value="0.2" oninput="document.getElementById('volVal').innerText = Math.round(this.value*100)+'%'">
                         </div>
                         <div>
-                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase mb-2"><span>Speed</span><span id="speedVal" class="text-white">1.0x</span></div>
+                            <div class="flex justify-between text-[10px] font-bold text-slate-500 uppercase mb-2"><span>Speed</span><span id="speedVal" class="text-white">1.0x</span></div>
                             <input type="range" id="voiceSpeed" min="0.8" max="1.5" step="0.1" value="1.0" oninput="document.getElementById('speedVal').innerText = this.value+'x'">
                         </div>
                     </div>
                 </div>
 
-                <button onclick="synthesizeAudio()" id="synthBtn" class="w-full bg-white text-slate-900 hover:bg-blue-50 py-3 rounded-xl font-bold text-sm transition-all flex justify-center items-center gap-2 active:scale-95 shadow-lg shadow-white/10">
+                <button onclick="synthesizeAudio()" id="synthBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold text-sm transition-all flex justify-center items-center gap-2 active:scale-95 shadow-lg shadow-blue-900/20">
                     <i data-lucide="play-circle" class="w-4 h-4"></i> Generate Audio
                 </button>
                 <div class="flex justify-between items-center px-1">
                     <p class="text-[10px] text-slate-500" id="ttsProviderLabel">Current: Default</p>
-                    <button onclick="initBrowserVoices()" class="text-[10px] text-blue-400 hover:underline">Refresh Voices</button>
+                    <button onclick="initBrowserVoices()" class="text-[10px] text-slate-400 hover:text-white transition-colors">Refresh Voices</button>
                 </div>
             </section>
 
             <section class="space-y-4">
                 <h2 class="text-xs font-bold text-purple-400 tracking-wider flex items-center gap-2 uppercase">
-                    <i data-lucide="monitor" class="w-4 h-4"></i> 3. Visuals
+                     <span class="bg-purple-500/10 w-6 h-6 flex items-center justify-center rounded text-purple-500">3</span> Visuals
                 </h2>
                 
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="setBgMode('minecraft')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-purple-500 text-slate-300 py-2 rounded-lg text-xs font-bold transition-all">Minecraft</button>
-                    <button onclick="document.getElementById('bgVideoInput').click()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-purple-500 text-slate-300 py-2 rounded-lg text-xs font-bold transition-all">Upload Video</button>
+                    <button onclick="setBgMode('minecraft')" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 text-slate-300 py-2.5 rounded-lg text-xs font-bold transition-all">Minecraft Gameplay</button>
+                    <button onclick="document.getElementById('bgVideoInput').click()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 text-slate-300 py-2.5 rounded-lg text-xs font-bold transition-all">Custom Upload</button>
                     <input type="file" id="bgVideoInput" accept="video/*" class="hidden" onchange="handleVideoUpload(this.files[0])">
                 </div>
 
-                <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-4">
                     <div class="flex gap-4">
                         <div class="flex-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Text Color</label>
-                            <input type="color" id="textColor" value="#ffffff" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-600">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Text Color</label>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="textColor" value="#ffffff" class="w-8 h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
+                                <span class="text-xs text-slate-400">Main</span>
+                            </div>
                         </div>
                         <div class="flex-1">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Highlight</label>
-                            <input type="color" id="highlightColor" value="#fbbf24" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-600">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Highlight</label>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="highlightColor" value="#fbbf24" class="w-8 h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
+                                <span class="text-xs text-slate-400">Accent</span>
+                            </div>
                         </div>
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Text Position (Y-Axis)</label>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-2 block">Text Y-Position</label>
                         <input type="range" id="textY" min="-300" max="300" value="0" class="w-full" oninput="renderPreview()">
                     </div>
                 </div>
             </section>
         </div>
 
-        <div class="p-6 border-t border-slate-800 bg-slate-900 grid grid-cols-2 gap-4 z-40 shrink-0">
-            <button onclick="togglePlay()" id="playBtn" class="bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-900/50">
+        <div class="p-6 border-t border-slate-800 bg-slate-950 grid grid-cols-2 gap-4 z-40 shrink-0">
+            <button onclick="togglePlay()" id="playBtn" class="bg-white hover:bg-gray-100 text-black py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-white/10">
                 <i data-lucide="play" class="w-4 h-4"></i> PREVIEW
             </button>
-            <button onclick="saveProjectToCloud()" id="saveBtn" disabled class="bg-slate-800 text-slate-600 cursor-not-allowed py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 border border-slate-700">
+            <button onclick="saveProjectToCloud()" id="saveBtn" disabled class="bg-slate-900 text-slate-600 cursor-not-allowed py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 border border-slate-800">
                 <i data-lucide="cloud" class="w-4 h-4"></i> SAVE
             </button>
         </div>
@@ -189,16 +195,16 @@
 
     <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm modal">
         <div class="bg-white rounded-2xl w-[90%] max-w-[500px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <div class="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                 <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2"><i data-lucide="sliders" class="w-5 h-5 text-blue-600"></i> Settings</h3>
-                <button onclick="toggleSettings()" class="text-gray-400 hover:text-black transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button onclick="toggleSettings()" class="text-gray-500 hover:text-black transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             
-            <div class="p-6 overflow-y-auto space-y-6">
+            <div class="p-6 overflow-y-auto space-y-6 text-gray-800">
                 
-                <div class="space-y-2 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                <div class="space-y-2 bg-blue-50 p-4 rounded-lg border border-blue-100">
                     <label class="text-[10px] font-bold text-blue-800 uppercase tracking-widest block">Puter.js Version</label>
-                    <select id="puterVersionSelector" class="w-full bg-white border border-blue-200 text-sm font-medium rounded-lg px-3 py-2 outline-none">
+                    <select id="puterVersionSelector" class="w-full bg-white border border-blue-200 text-gray-900 text-sm font-medium rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200">
                         <option value="v2">Version 2 (Latest)</option>
                         <option value="v1">Version 1 (Legacy)</option>
                     </select>
@@ -209,34 +215,34 @@
                     <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
                         <i data-lucide="cpu" class="w-3 h-3"></i> Text Generation
                     </label>
-                    <select id="genProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-200 text-sm font-medium rounded-lg px-3 py-2 outline-none focus:border-black">
+                    <select id="genProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-medium rounded-lg px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-gray-200">
                         <option value="puter">Puter AI (Free / No Key)</option>
                         <option value="gemini">Google Gemini</option>
                         <option value="groq">Groq (Llama 3)</option>
                         <option value="openai">OpenAI (GPT-4)</option>
                     </select>
                     
-                    <div id="key-gemini" class="provider-key hidden"><input id="geminiKey" type="password" class="w-full bg-gray-50 border border-gray-200 text-xs rounded-lg px-3 py-2 outline-none font-mono" placeholder="Gemini API Key"></div>
-                    <div id="key-groq" class="provider-key hidden"><input id="groqKey" type="password" class="w-full bg-gray-50 border border-gray-200 text-xs rounded-lg px-3 py-2 outline-none font-mono" placeholder="Groq API Key"></div>
-                    <div id="key-openai" class="provider-key hidden"><input id="openaiKey" type="password" class="w-full bg-gray-50 border border-gray-200 text-xs rounded-lg px-3 py-2 outline-none font-mono" placeholder="OpenAI API Key"></div>
+                    <div id="key-gemini" class="provider-key hidden"><input id="geminiKey" type="password" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg px-3 py-2 outline-none font-mono" placeholder="Paste Gemini API Key"></div>
+                    <div id="key-groq" class="provider-key hidden"><input id="groqKey" type="password" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg px-3 py-2 outline-none font-mono" placeholder="Paste Groq API Key"></div>
+                    <div id="key-openai" class="provider-key hidden"><input id="openaiKey" type="password" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg px-3 py-2 outline-none font-mono" placeholder="Paste OpenAI API Key"></div>
                 </div>
 
-                <hr class="border-gray-100">
+                <hr class="border-gray-200">
 
                 <div class="space-y-3">
                     <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
                         <i data-lucide="mic" class="w-3 h-3"></i> Voice Provider
                     </label>
-                    <select id="ttsProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-200 text-sm font-medium rounded-lg px-3 py-2 outline-none focus:border-black">
+                    <select id="ttsProvider" onchange="updateSettingsUI()" class="w-full bg-white border border-gray-300 text-gray-900 text-sm font-medium rounded-lg px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-gray-200">
                         <option value="browser">Browser Native (Free / Offline)</option>
                         <option value="puter">Puter TTS (Free)</option>
                         <option value="gemini">Google Gemini (Requires Key)</option>
                     </select>
-                    <p class="text-[10px] text-gray-400">Browser Native uses voices installed on your computer. No keys required.</p>
+                    <p class="text-[10px] text-gray-500">Browser Native uses voices installed on your computer. No keys required.</p>
                 </div>
             </div>
 
-            <div class="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
+            <div class="p-5 border-t border-gray-200 bg-gray-50 flex justify-end gap-2">
                 <button onclick="saveSettings()" class="bg-black text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-800 transition-all shadow-lg">Save Changes</button>
             </div>
         </div>
@@ -262,7 +268,7 @@
 
         let SETTINGS = {
             genProvider: 'puter',
-            ttsProvider: 'browser', // Defaulting to browser for ease of use
+            ttsProvider: 'browser', 
             puterVersion: 'v2',
             keys: { gemini: '', groq: '', openai: '' }
         };
@@ -278,7 +284,6 @@
             loadSettingsLocal();
             updateSettingsUI();
             
-            // Puter Auth Check
             if (window.puter) {
                 try {
                     const resp = await puter.auth.getUser();
@@ -288,9 +293,9 @@
 
             document.body.addEventListener('click', initAudio, { once: true });
             
-            // Set default video
-            video.src = 'https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4'; // Fallback space video
-            video.onerror = () => { console.log("Video load error, using solid color"); };
+            // Set default video (Fallback to a simple color if this fails)
+            video.src = 'https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4'; 
+            video.onerror = () => { console.log("Video load error"); };
             renderPreview();
 
             // Init Browser Voices
@@ -315,6 +320,7 @@
                 const opt = document.createElement('option');
                 opt.value = i;
                 opt.text = `${v.name} (${v.lang})`;
+                opt.classList.add('text-black'); // Force text color in option
                 if(v.default) opt.selected = true;
                 select.appendChild(opt);
             });
@@ -334,13 +340,11 @@
             const gen = document.getElementById('genProvider').value;
             const tts = document.getElementById('ttsProvider').value;
             
-            // Toggle Keys
             document.querySelectorAll('.provider-key').forEach(el => el.classList.add('hidden'));
             if(gen === 'gemini' || tts === 'gemini') document.getElementById('key-gemini').classList.remove('hidden');
             if(gen === 'groq') document.getElementById('key-groq').classList.remove('hidden');
             if(gen === 'openai') document.getElementById('key-openai').classList.remove('hidden');
 
-            // Toggle Voice Selector
             document.getElementById('browserVoiceContainer').classList.toggle('hidden', tts !== 'browser');
             
             document.getElementById('ttsProviderLabel').innerText = `Provider: ${tts.toUpperCase()}`;
@@ -357,7 +361,7 @@
             SETTINGS.keys.openai = document.getElementById('openaiKey').value;
             
             localStorage.setItem('dingle_settings_v4', JSON.stringify(SETTINGS));
-            localStorage.setItem('puter_version', SETTINGS.puterVersion); // For the head script
+            localStorage.setItem('puter_version', SETTINGS.puterVersion);
 
             showToast("Settings Saved", 'success');
             toggleSettings();
@@ -386,7 +390,7 @@
             document.getElementById('authContainer').innerHTML = `<span class="text-[10px] font-bold text-emerald-400 mr-2 border border-emerald-900 bg-emerald-900/30 px-2 py-1 rounded">${user.username}</span>`;
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = false; 
-            saveBtn.classList.replace('bg-slate-800','bg-emerald-600'); 
+            saveBtn.classList.replace('bg-slate-900','bg-emerald-600'); 
             saveBtn.classList.replace('text-slate-600','text-white'); 
             saveBtn.classList.remove('cursor-not-allowed');
         }
@@ -409,7 +413,6 @@
 
                 if (p === 'puter') {
                     if(!STATE.user) { 
-                        // Guest mode attempt
                          try { text = await puter.ai.chat(prompt); } 
                          catch(e){ throw new Error("Login required for Puter AI"); }
                     } else {
@@ -424,7 +427,6 @@
                     const data = await res.json();
                     text = data.candidates[0].content.parts[0].text;
                 }
-                // (Groq/OpenAI logic omitted for brevity, essentially same fetch structure)
 
                 document.getElementById('scriptText').value = typeof text === 'string' ? text : JSON.stringify(text);
                 showToast(`Generated via ${p.toUpperCase()}`, 'success');
@@ -447,25 +449,18 @@
                 let buffer = null;
 
                 if (p === 'browser') {
-                    // --- BROWSER NATIVE TTS ---
                     const u = new SpeechSynthesisUtterance(text);
                     const voices = window.speechSynthesis.getVoices();
                     const selectedIdx = document.getElementById('browserVoiceSelect').value;
                     u.voice = voices[selectedIdx] || voices[0];
                     u.rate = parseFloat(document.getElementById('voiceSpeed').value);
                     
-                    // Sadly, Browser TTS doesn't give us a buffer easily.
-                    // We will just calculate timing based on estimated rate for the preview
-                    // and use real-time playback for the preview.
-                    STATE.ttsBuffer = null; // Mark as null to trigger realtime mode
-                    STATE.guestDuration = (text.split(' ').length / (u.rate * 3)) + 2; // rough estimate
-                    
-                    // We store the utterance to play it later
+                    STATE.ttsBuffer = null; 
+                    STATE.guestDuration = (text.split(' ').length / (u.rate * 3)) + 2; 
                     STATE.currentUtterance = u;
                     showToast("Ready (Browser Voice)", 'success');
 
                 } else if (p === 'gemini') {
-                    // --- GEMINI TTS ---
                     if(!SETTINGS.keys.gemini) throw new Error("Gemini Key required");
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${SETTINGS.keys.gemini}`, {
                         method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -483,7 +478,6 @@
                     STATE.ttsBuffer = buffer;
                     STATE.currentUtterance = null;
                 } else if (p === 'puter') {
-                    // --- PUTER TTS ---
                     const audio = await puter.ai.txt2speech(text);
                     const res = await fetch(audio.src);
                     const arr = await res.arrayBuffer();
@@ -493,8 +487,8 @@
                     STATE.currentUtterance = null;
                 }
 
-                // Timing Calculation for Words
-                const totalDur = STATE.ttsBuffer ? STATE.ttsBuffer.duration : STATE.guestDuration * 1.5; // *1.5 padding for browser tts
+                // Timing Calculation
+                const totalDur = STATE.ttsBuffer ? STATE.ttsBuffer.duration : STATE.guestDuration * 1.5;
                 const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
                 let charCount = text.length;
                 let currentTime = 0;
@@ -523,14 +517,11 @@
             STATE.sourceNodes = []; 
             STATE.startTime = STATE.audioCtx.currentTime;
 
-            // Handle Audio
             if (STATE.currentUtterance) {
-                // Browser TTS Mode
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(STATE.currentUtterance);
-                STATE.startTime = STATE.audioCtx.currentTime; // approximate
+                STATE.startTime = STATE.audioCtx.currentTime; 
             } else if (STATE.ttsBuffer) {
-                // Buffer Mode
                 const n = STATE.audioCtx.createBufferSource(); 
                 n.buffer = STATE.ttsBuffer; 
                 n.playbackRate.value = parseFloat(document.getElementById('voiceSpeed').value); 
@@ -540,10 +531,9 @@
                 STATE.sourceNodes.push(n);
             } else {
                 showToast("Generating Visual Only", 'success');
-                STATE.guestDuration = 10; // Default
+                STATE.guestDuration = 10;
             }
 
-            // Background Music
             if(STATE.bgBuffer) { 
                 const n = STATE.audioCtx.createBufferSource(); 
                 n.buffer=STATE.bgBuffer; n.loop=true; 
@@ -558,7 +548,8 @@
             video.play(); 
             STATE.isPlaying=true; 
             document.getElementById('playBtn').innerHTML='<i data-lucide="square" class="w-4 h-4"></i> STOP'; 
-            document.getElementById('playBtn').classList.replace('bg-blue-600', 'bg-red-600');
+            document.getElementById('playBtn').classList.replace('bg-white', 'bg-red-500');
+            document.getElementById('playBtn').classList.replace('text-black', 'text-white');
             animate();
         }
 
@@ -570,7 +561,8 @@
             STATE.isPlaying=false; 
             cancelAnimationFrame(STATE.animationId); 
             document.getElementById('playBtn').innerHTML='<i data-lucide="play" class="w-4 h-4"></i> PREVIEW'; 
-            document.getElementById('playBtn').classList.replace('bg-red-600', 'bg-blue-600');
+            document.getElementById('playBtn').classList.replace('bg-red-500', 'bg-white');
+            document.getElementById('playBtn').classList.replace('text-white', 'text-black');
             renderPreview(); 
         }
 
@@ -579,7 +571,6 @@
             const speed = (STATE.ttsBuffer || STATE.currentUtterance) ? parseFloat(document.getElementById('voiceSpeed').value) : 1.0;
             const elapsed = (STATE.audioCtx.currentTime - STATE.startTime) * speed;
             
-            // Auto stop logic
             const max = STATE.ttsBuffer ? STATE.ttsBuffer.duration : STATE.guestDuration;
             if(!STATE.currentUtterance && elapsed > max) { stop(); return; }
 
@@ -588,26 +579,21 @@
         }
 
         function drawFrame(time) {
-            // Background
             const aspect = video.videoWidth/video.videoHeight; const cAspect = canvas.width/canvas.height;
             let dw,dh,dx,dy; if(aspect>cAspect){dh=canvas.height; dw=dh*aspect; dx=(canvas.width-dw)/2; dy=0;}else{dw=canvas.width; dh=dw/aspect; dx=0; dy=(canvas.height-dh)/2;}
             ctx.drawImage(video,dx,dy,dw,dh);
             
-            // Dim
-            ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(0,0,canvas.width,canvas.height);
             
-            // Text
             const active = STATE.words.find(w=>time>=w.start && time<w.end) || STATE.words[STATE.words.length-1];
             if(active && time < (STATE.ttsBuffer ? STATE.ttsBuffer.duration : 100)) {
                 ctx.font = '900 70px "Montserrat"'; ctx.textAlign='center';
                 const y = canvas.height/2 + parseInt(document.getElementById('textY').value);
                 const w = active.word.toUpperCase().replace(/[^A-Z0-9\']/g,'');
                 
-                // Stroke
                 ctx.lineJoin='round'; ctx.lineWidth=20; ctx.strokeStyle='black'; 
                 ctx.strokeText(w,canvas.width/2,y);
                 
-                // Highlight logic (roughly centered word gets highlight)
                 ctx.fillStyle = document.getElementById('textColor').value;
                 ctx.fillText(w,canvas.width/2,y);
             }
